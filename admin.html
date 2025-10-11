@@ -379,9 +379,9 @@
       margin-bottom: 15px;
     }
 
-    .logo-img-admin {
+    .logo-img-card {
       width: 100%;
-      max-width: 260px;
+      max-width: 240px;
       height: auto;
       object-fit: contain;
       display: block;
@@ -389,13 +389,13 @@
       transition: transform 0.3s ease;
     }
 
-    .logo-img-admin:hover {
+    .logo-img-card:hover {
       transform: scale(1.04);
     }
 
-    /* Mode gelap: jaga agar logo tetap terlihat kontras */
-    body.dark-mode .logo-img-admin {
-      filter: brightness(1.1) contrast(1.1);
+    /* Mode gelap – agar logo tetap kontras */
+    body.dark-mode .logo-img-card {
+      filter: brightness(1.15) contrast(1.1);
     }
   </style>
 </head>
@@ -585,9 +585,6 @@
       });
     }
 
-
-
-
     addBtn.addEventListener("click", async () => { const name = newName.value.trim(); let url = newUrl.value.trim(); if (!name || !url) return showModal("Isi nama dan URL terlebih dahulu", "warning"); url = normalizeUrl(url); const icon = iconFromName(name); try { if (editId) { await updateDoc(doc(db, "grid_links", editId), { name, url, icon }); editId = null; addBtn.textContent = "Tambah Link"; showToast("Perubahan disimpan", "success"); } else { const s = await getDocs(collection(db, "grid_links")); if (s.size >= 12) return showModal("Maksimal 12 link", "warning"); await addDoc(collection(db, "grid_links"), { name, url, icon, order: s.size + 1, active: true }); showToast("Link ditambahkan", "success"); } newName.value = ""; newUrl.value = ""; loadGrid(); } catch (e) { showModal("Operasi gagal: " + e.message, "error"); } });
 
     // Drag & Drop
@@ -607,7 +604,4 @@
     themeSwitcher.addEventListener("click", () => { body.classList.toggle("dark-mode"); themeIcon.classList.toggle("fa-moon"); themeIcon.classList.toggle("fa-sun"); });
   </script>
 </body>
-
-
 </html>
-
