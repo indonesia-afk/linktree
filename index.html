@@ -60,6 +60,25 @@
       margin-bottom: 15px;
     }
 
+    .logo-image {
+      margin-bottom: 15px;
+    }
+
+    .logo-img-card {
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-img-card:hover {
+      transform: scale(1.04);
+    }
+
+
     .title {
       font-size: 1.6em;
       font-weight: 700;
@@ -232,19 +251,40 @@
       background: rgba(30, 30, 30, 0.9);
       color: #e2e8f0;
     }
+
+    /* ===== PERBAIKAN: hover text di mode gelap ===== */
+    body.dark-mode .grid-item:hover span {
+      background: rgba(34, 34, 34, 0.95);
+      /* ganti latar jadi gelap transparan */
+      color: #fff;
+      /* pastikan teks tetap terlihat */
+    }
   </style>
 </head>
 
 <body>
   <div class="card">
     <button id="theme-switcher"><i class="fas fa-moon"></i></button>
-    <div class="logo-icon"><i class="fas fa-cube"></i></div>
+
+    <div class="logo-image">
+      <picture>
+        <source srcset="https://indonesia-afk.github.io/linktree/logo-header.webp" type="image/webp">
+        <img src="https://indonesia-afk.github.io/linktree/logo-header.png" alt="Logo Portal" class="logo-img-card">
+      </picture>
+    </div>
+
+
     <h1 id="mainTitle" class="title">LINKS GRID by @TOMMY</h1>
     <p id="subTitle" class="description">Pilih salah satu menu di bawah ini</p>
     <p id="infoText" class="info-text">Pilih salah satu menu di bawah ini</p>
     <div id="gridContainer" class="icon-grid"></div>
-    <footer>Links Grid @TOMMY<br>Powered by <a href="https://news.t-o-m.my.id" target="_blank"
-        rel="noopener noreferrer">https://news.t-o-m.my.id</a></footer>
+    <footer>
+      Links Grid @TOMMY<br>
+      Powered by <a href="https://espeje.com" target="_blank" rel="noopener noreferrer">https://espeje.com</a><br>
+      Informasi & Berita di <a href="https://news.t-o-m.my.id" target="_blank"
+        rel="noopener noreferrer">https://news.t-o-m.my.id</a>
+    </footer>
+
   </div>
 
   <div id="toast" class="toast">
