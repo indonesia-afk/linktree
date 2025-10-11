@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard @TOMMY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --transition: 0.3s; }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f4f7f9;
+      color: #1a202c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background-color var(--transition), color var(--transition);
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.05);
+      padding: 30px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      position: relative;
+      transition: all var(--transition);
+    }
+    #theme-switcher {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #e2e8f0;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon { font-size: 3.5em; color: #3182ce; margin-bottom: 15px; }
+    .title { font-size: 1.6em; font-weight: 700; margin: 0; line-height: 1.3; }
+    .description {
+      font-size: 0.95em;
+      color: #718096;
+      margin: 8px 0 10px 0;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+    .info-text {
+      display: none;
+      font-size: 0.85em;
+      color: #a0aec0;
+      margin-bottom: 15px;
+    }
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .grid-item {
+      background: #fff;
+      color: #2d3748;
+      text-decoration: none;
+      padding: 15px;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      aspect-ratio: 1/1;
+      transition: all 0.2s ease-in-out;
+    }
+    .grid-item:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+    .grid-item i { font-size: 2em; color: #4a5568; }
+    .grid-item span {
+      font-weight: 500;
+      font-size: clamp(0.75em, 2vw, 0.9em); /* otomatis menyesuaikan panjang teks */
+      text-align: center;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #a0aec0;
+    }
+    footer a {
+      color: #3182ce;
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* === DARK MODE === */
+    body.dark-mode { background-color: #121212; color: #e2e8f0; }
+    body.dark-mode .card { background-color: #1e1e1e; border-color: #333; }
+    body.dark-mode .grid-item { background-color: #1e1e1e; color: #e2e8f0; border-color: #333; }
+    body.dark-mode .grid-item i { color: #a0aec0; }
+    body.dark-mode #theme-switcher { background: #2a2a2a; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <button id="theme-switcher"><i class="fas fa-moon"></i></button>
+    <div class="logo-icon"><i class="fas fa-cube"></i></div>
+    <h1 id="mainTitle" class="title">FREE SPPD ONLINE</h1>
+    <p id="subTitle" class="description">Pilih salah satu menu di bawah ini</p>
+    <p id="infoText" class="info-text">Pilih salah satu menu di bawah ini</p>
+    <div id="gridContainer" class="icon-grid"></div>
+    <footer>
+      Links Grid @TOMMY<br>
+      Powered by <a href="https://news.t-o-m.my.id" target="_blank">https://news.t-o-m.my.id</a>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // === FIREBASE CONFIG ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyCP2dnXfeRR57NNYarJSYtBDjve8K-bOd8",
+      authDomain: "linktree-wannabe.firebaseapp.com",
+      projectId: "linktree-wannabe",
+      storageBucket: "linktree-wannabe.appspot.com",
+      messagingSenderId: "246673617043",
+      appId: "1:246673617043:web:573d5386df8b29c945dd66"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // === ICON SMART MAP (Bahasa Indonesia) ===
+    function iconFromName(name) {
+      const n = name.toLowerCase();
+      if (/(dokumen|arsip|berkas|file)/.test(n)) return "fa-file-alt";
+      if (/(pdf|unduhan|download)/.test(n)) return "fa-file-pdf";
+      if (/(formulir|pendaftaran|input)/.test(n)) return "fa-clipboard-list";
+      if (/(tutorial|panduan|video|youtube)/.test(n)) return "fa-video";
+      if (/(izin|akses|login)/.test(n)) return "fa-key";
+      if (/(laporan|hasil|evaluasi)/.test(n)) return "fa-chart-line";
+      if (/(kontak|hubungi|email)/.test(n)) return "fa-envelope";
+      if (/(jadwal|kalender|agenda)/.test(n)) return "fa-calendar";
+      if (/(berita|pengumuman|informasi)/.test(n)) return "fa-bullhorn";
+      if (/(bantuan|panduan|tanya)/.test(n)) return "fa-circle-info";
+      if (/(profil|pengguna|akun)/.test(n)) return "fa-user";
+      if (/(link|tautan|situs)/.test(n)) return "fa-link";
+      if (/(sppd|perjalanan|dinas)/.test(n)) return "fa-briefcase";
+
+      // fallback universal (rotasi variasi agar tak seragam)
+      const fallback = [
+        "fa-star", "fa-rocket", "fa-paper-plane", "fa-lightbulb", "fa-layer-group",
+        "fa-globe", "fa-comments", "fa-clipboard", "fa-heart", "fa-circle-check"
+      ];
+      const rand = Math.floor(Math.random() * fallback.length);
+      return fallback[rand];
+    }
+
+    // === LOAD HEADER ===
+    async function loadHeader() {
+      const headerRef = doc(db, "site_header", "main");
+      const snap = await getDoc(headerRef);
+      if (snap.exists()) {
+        const d = snap.data();
+        mainTitle.textContent = d.mainTitle || "LINKS GRID by @TOMMY";
+        subTitle.textContent = d.subTitle || "Powered by https://news.t-o-m.my.id";
+      }
+    }
+
+    // === LOAD GRID ===
+    async function loadGrid() {
+      const q = query(collection(db, "grid_links"), orderBy("order", "asc"));
+      const snapshot = await getDocs(q);
+      gridContainer.innerHTML = "";
+      const infoText = document.getElementById("infoText");
+      if (snapshot.empty) {
+        infoText.style.display = "none";
+        return;
+      }
+      infoText.style.display = "block";
+
+      snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        const icon = d.icon || iconFromName(d.name);
+        const html = `
+          <a href="${d.url}" target="_blank" class="grid-item">
+            <i class="fas ${icon}"></i>
+            <span>${d.name}</span>
+          </a>`;
+        gridContainer.insertAdjacentHTML("beforeend", html);
+      });
+    }
+
+    loadHeader();
+    loadGrid();
+
+    // === THEME SWITCHER ===
+    const themeSwitcher = document.getElementById("theme-switcher");
+    const body = document.body;
+    const icon = themeSwitcher.querySelector("i");
+    themeSwitcher.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      icon.classList.toggle("fa-moon");
+      icon.classList.toggle("fa-sun");
+    });
+  </script>
+</body>
+</html>
