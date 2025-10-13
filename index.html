@@ -66,7 +66,7 @@
 
     .logo-img-card {
       width: 100%;
-      max-width: 240px;
+      max-width: 260px;
       height: auto;
       object-fit: contain;
       display: block;
@@ -275,7 +275,7 @@
 
     <h1 id="mainTitle" class="title">LINKS GRID by @TOMMY</h1>
     <p id="subTitle" class="description">Powered by https://espeje.com</p>
-    <p id="infoText" class="info-text">Pilih salah satu menu di bawah ini</p>
+    <p id="infoText" class="info-text"></p>
     <div id="gridContainer" class="icon-grid"></div>
     <footer>
       Links Grid @TOMMY<br>
@@ -370,7 +370,7 @@
     /* Header + Grid */
     async function loadHeader() {
       const snap = await getDoc(doc(db, "site_header", "main"));
-      if (snap.exists()) { const d = snap.data(); mainTitle.textContent = d.mainTitle || "LINKS GRID by @TOMMY"; subTitle.textContent = d.subTitle || "Pilih salah satu menu di bawah ini"; }
+      if (snap.exists()) { const d = snap.data(); mainTitle.textContent = d.mainTitle || "LINKS GRID by @TOMMY"; subTitle.textContent = d.subTitle || "Powered by https://espeje.com"; }
     }
 
     async function loadGrid() {
@@ -428,5 +428,6 @@
 
 
 </html>
+
 
 
