@@ -423,13 +423,16 @@
       if (span.scrollHeight > maxH * 1.1) { span.title = span.textContent; }
     }
 
-    /* Header */
     async function loadHeader() {
       try {
         const snap = await getDoc(doc(db, "users", tenant, "site_header", "main"));
         if (!snap.exists()) {
-          showToast("Data header belum tersedia");
-          return;
+          console.warn(`User @${tenant} tidak ditemukan — alihkan ke @tommy`);
+          if (tenant !== "tommy") {
+            showToast(`User @${tenant} tidak ditemukan. Dialihkan ke halaman utama...`, "warning", 2500);
+            setTimeout(() => { window.location.href = "?u=tommy"; }, 2500);
+            return;
+          }
         }
 
         const d = snap.data();
@@ -439,16 +442,17 @@
         // ==== LOGO ATAS ====
         if (topLogo) {
           if (d.logoUrl && d.logoUrl.trim() !== "") {
-            // pakai logo custom dari Firestore (upload admin)
             topLogo.src = d.logoUrl;
           } else {
-            // fallback lokal dari root GitHub
             topLogo.src = "logo-default.png";
           }
         }
-
       } catch (e) {
-        showModal("Gagal memuat header: " + e.message, "error");
+        console.error("Gagal memuat header:", e);
+        if (tenant !== "tommy") {
+          showToast(`Gagal memuat tenant @${tenant}. Kembali ke utama...`, "error", 2000);
+          setTimeout(() => { window.location.href = "?u=tommy"; }, 2000);
+        }
       }
     }
 

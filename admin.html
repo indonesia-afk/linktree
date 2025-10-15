@@ -798,25 +798,38 @@
       }
     });
 
-    // Observasi perubahan status login
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          // Ambil claim tenantId dari token Firebase
-          const tokenResult = await getIdTokenResult(user);
-          const tenantFromClaim = tokenResult.claims.tenantId || null;
-
-          // Deteksi superadmin
           const isSuperadmin =
             user.email === "admin@tommy.or.id" ||
             user.email === "tommy@tommy.or.id";
 
-          // Batasi akses lintas tenant
-          if (!isSuperadmin && tenantFromClaim !== tenant) {
+          // Ambil dokumen admin sesuai tenant di URL
+          const adminRef = doc(db, "admins", tenant);
+          const adminSnap = await getDoc(adminRef);
+
+          if (!adminSnap.exists()) {
+            showModal(
+              `🚫 Tenant @${tenant} belum terdaftar di sistem.`,
+              "error",
+              async () => {
+                await signOut(auth);
+                location.href = "index.html";
+              }
+            );
+            return;
+          }
+
+          const adminData = adminSnap.data();
+          const registeredUid = adminData.uid;
+          const registeredTenant = adminData.tenantId || tenant;
+
+          // Validasi: apakah akun ini cocok dengan tenant
+          if (!isSuperadmin && user.uid !== registeredUid) {
             showModal(
               `🚫 Akses ditolak untuk tenant @${tenant}.
-Akun Anda terdaftar di tenant @${tenantFromClaim || "tidak diketahui"}.`,
-
+Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
               "error",
               async () => {
                 await signOut(auth);
@@ -832,9 +845,8 @@ Akun Anda terdaftar di tenant @${tenantFromClaim || "tidak diketahui"}.`,
           title.textContent = `Links Grid Admin @${tenant}`;
           showToast(`Login sebagai ${user.email}`, "success");
 
-          // Muat data
-          loadHeader();
-          loadGrid();
+          await loadHeader();
+          await loadGrid();
         } catch (err) {
           console.error("Auth verification error:", err);
           showModal("Gagal memverifikasi hak akses.", "error", async () => {
@@ -848,6 +860,7 @@ Akun Anda terdaftar di tenant @${tenantFromClaim || "tidak diketahui"}.`,
         title.textContent = "Admin Login";
       }
     });
+
 
     // Tombol Logout
     logoutBtn.addEventListener("click", () => signOut(auth));

@@ -317,6 +317,12 @@
       if (!name || !email || !pass) return alert("Isi semua kolom!");
 
       const tenant = name.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+      // Cegah duplikasi tenant
+      const existing = await getDoc(doc(db, "admins", tenant));
+      if (existing.exists()) {
+        alert(`Tenant '${tenant}' sudah ada!`);
+        return;
+      }
       const secondaryApp = initializeApp(firebaseConfig, "Secondary");
       const secondaryAuth = getAuth(secondaryApp);
       const newUser = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
@@ -333,7 +339,12 @@
         ]
       };
 
-      await setDoc(doc(db, "admins", tenant), { uid, email, createdAt: new Date().toISOString() });
+      await setDoc(doc(db, "admins", tenant), {
+        uid,
+        email,
+        tenantId: tenant, // 🔥 tambahkan field tenantId
+        createdAt: new Date().toISOString()
+      });
       await setDoc(doc(db, "users", tenant, "site_header", "main"), template.site_header.main);
       for (let i = 0; i < template.grid_links.length; i++) {
         await setDoc(doc(db, "users", tenant, "grid_links", String(i + 1)), template.grid_links[i]);
