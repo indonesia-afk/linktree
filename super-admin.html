@@ -249,27 +249,40 @@
       return `${dd}/${mm}/${yy}`;
     }
 
-    async function listTenants() {
-      row("Memuat data...");
-      const snap = await getDocs(collection(db, "admins"));
-      if (snap.empty) return row("Belum ada tenant");
-      tenantBody.innerHTML = "";
-      snap.forEach(docSnap => {
-        const d = docSnap.data();
-        const tenant = docSnap.id;
-        const email = d.email || "-";
-        const created = d.createdAt ? shortDate(d.createdAt) : "-";
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="small-cell">${tenant}
-            <a href="https://links.tommy.or.id/@${tenant}" target="_blank" class="tenant-link" title="Lihat halaman tenant">🔗</a>
-          </td>
-          <td class="small-cell">${email}</td>
-          <td class="small-cell">${created}</td>
-          <td><button class="danger-btn" onclick="window.deleteTenant('${tenant}')">Hapus</button></td>`;
-        tenantBody.appendChild(tr);
-      });
-    }
+async function listTenants() {
+  row("Memuat data...");
+  const snap = await getDocs(collection(db, "admins"));
+  if (snap.empty) return row("Belum ada tenant");
+  tenantBody.innerHTML = "";
+
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
+    const tenant = docSnap.id;
+    const email = d.email || "-";
+    const created = d.createdAt ? shortDate(d.createdAt) : "-";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="small-cell">
+        ${tenant}
+        <a href="https://links.tommy.or.id/#/@${tenant}" target="_blank"
+           class="tenant-link" title="Lihat halaman tenant">🔗</a>
+      </td>
+      <td class="small-cell">
+        ${email}
+        <a href="https://links.tommy.or.id/#/@${tenant}/admin.html" target="_blank"
+           class="tenant-link" title="Buka panel admin @${tenant}">
+           <i class="fas fa-external-link-alt"></i>
+        </a>
+      </td>
+      <td class="small-cell">${created}</td>
+      <td style="text-align:center;">
+        <button class="danger-btn" onclick="window.deleteTenant('${tenant}')">Hapus</button>
+      </td>`;
+    tenantBody.appendChild(tr);
+  });
+}
+
 
     window.deleteTenant = async function (tenant) {
       if (!confirm(`Hapus tenant '${tenant}'?`)) return;

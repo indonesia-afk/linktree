@@ -569,11 +569,25 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // === Tenant dari URL atau query (mis: /@pempro atau ?@pempro) ===
-    const match = window.location.pathname.match(/@([^/]+)/);
-    const qmatch = window.location.search.match(/@([^&]+)/);
-    const tenant = (match ? match[1] : (qmatch ? qmatch[1] : "pempro")).toLowerCase();
-    console.log("Admin tenant:", tenant);
+// === Tenant autodetect: versi hash-based agar kompatibel di GitHub Pages ===
+let tenant = "tommy"; // default
+
+function detectTenant() {
+  const hash = window.location.hash; // contoh: "#/@pempro/admin.html"
+  const match = hash.match(/@([\w-]+)/);
+  return match ? match[1].toLowerCase() : "tommy";
+}
+
+tenant = detectTenant();
+console.log("Admin tenant:", tenant);
+
+// Perbarui otomatis bila hash berubah (misal berpindah tenant tanpa reload)
+window.addEventListener("hashchange", () => {
+  tenant = detectTenant();
+  console.log("🔄 Tenant berganti:", tenant);
+  loadHeader();
+  loadGrid();
+});
 
     // === CLOUDINARY CONFIG (isi punyamu) ===
     const CLOUD_NAME = "dfojor5pr";
