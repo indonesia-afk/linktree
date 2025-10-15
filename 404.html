@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex">
   <script>
     window.onload = () => {
-      const path = window.location.pathname; // contoh: "/tujamsos" atau "/admin.html/tujamsos"
+      const path = window.location.pathname; // contoh: "/tujamsos", "/admin/tujamsos", dll
       console.log("404 intercept:", path);
 
       // Daftar path yang tidak boleh dianggap tenant
@@ -17,15 +17,23 @@
         "404.html"
       ];
 
-      // === 1️⃣ Jika /admin.html/namaTenant → redirect ke /admin.html?u=namaTenant ===
-      const matchAdmin = path.match(/^\/admin\.html\/([\w-]+)$/);
-      if (matchAdmin) {
-        const tenant = matchAdmin[1];
+      // === 1️⃣ /admin.html/<tenant> → /admin.html?u=<tenant> ===
+      const matchAdminHtml = path.match(/^\/admin\.html\/([\w-]+)$/);
+      if (matchAdminHtml) {
+        const tenant = matchAdminHtml[1];
         window.location.replace(`/admin.html?u=${tenant}`);
         return;
       }
 
-      // === 2️⃣ Jika /namaTenant langsung (dan bukan reserved) → redirect ke /?u=namaTenant ===
+      // === 2️⃣ /admin/<tenant> → /admin.html?u=<tenant> ===
+      const matchAdminDir = path.match(/^\/admin\/([\w-]+)$/);
+      if (matchAdminDir) {
+        const tenant = matchAdminDir[1];
+        window.location.replace(`/admin.html?u=${tenant}`);
+        return;
+      }
+
+      // === 3️⃣ /<tenant> langsung (selama bukan reserved) → /?u=<tenant> ===
       const matchTenant = path.match(/^\/([\w-]+)$/);
       if (matchTenant) {
         const tenant = matchTenant[1];
@@ -35,7 +43,7 @@
         }
       }
 
-      // === 3️⃣ Selain itu, fallback ke tenant default ===
+      // === 4️⃣ Fallback ke tenant default (tommy) ===
       window.location.replace("/?u=tommy");
     };
   </script>
