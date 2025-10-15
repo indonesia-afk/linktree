@@ -341,19 +341,25 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // === Tenant autodetect: bisa dari path "/@tenant" atau query "?@tenant"
-    let tenant = "tommy";
-    const pathMatch = window.location.pathname.match(/@([^/]+)/);
-    const queryMatch = window.location.search.match(/@([^&]+)/);
-
-    if (pathMatch) {
-      tenant = pathMatch[1].toLowerCase();
-    } else if (queryMatch) {
-      tenant = queryMatch[1].toLowerCase();
+    // === Tenant autodetect: versi hash-based agar bekerja di GitHub Pages ===
+    let tenant = "tommy"; // default tenant
+    function detectTenant() {
+      const hash = window.location.hash; // contoh: "#/@pempro"
+      const match = hash.match(/@([\w-]+)/);
+      return match ? match[1].toLowerCase() : "tommy";
     }
-
+    
+    // Set tenant pertama kali saat load
+    tenant = detectTenant();
     console.log("Tenant aktif:", tenant);
-
+    
+    // Dengarkan perubahan hash untuk berpindah tenant tanpa reload
+    window.addEventListener("hashchange", async () => {
+      tenant = detectTenant();
+      console.log("🔄 Tenant berganti:", tenant);
+      await loadHeader();
+      await loadGrid();
+    });
 
     // elemen DOM
     const mainTitle = document.getElementById("mainTitle");
@@ -490,5 +496,6 @@
     });
   </script>
 </body>
+
 
 </html>
