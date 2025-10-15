@@ -569,25 +569,25 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-// === Tenant autodetect: versi hash-based agar kompatibel di GitHub Pages ===
-let tenant = "tommy"; // default
+    // === Tenant autodetect: versi hash-based agar kompatibel di GitHub Pages ===
+    let tenant = "tommy"; // default
 
-function detectTenant() {
-  const hash = window.location.hash; // contoh: "#/@pempro/admin.html"
-  const match = hash.match(/@([\w-]+)/);
-  return match ? match[1].toLowerCase() : "tommy";
-}
+    function detectTenant() {
+      const hash = window.location.hash; // contoh: "#/@pempro/admin.html"
+      const match = hash.match(/@([\w-]+)/);
+      return match ? match[1].toLowerCase() : "tommy";
+    }
 
-tenant = detectTenant();
-console.log("Admin tenant:", tenant);
+    tenant = detectTenant();
+    console.log("Admin tenant:", tenant);
 
-// Perbarui otomatis bila hash berubah (misal berpindah tenant tanpa reload)
-window.addEventListener("hashchange", () => {
-  tenant = detectTenant();
-  console.log("🔄 Tenant berganti:", tenant);
-  loadHeader();
-  loadGrid();
-});
+    // Perbarui otomatis bila hash berubah (misal berpindah tenant tanpa reload)
+    window.addEventListener("hashchange", () => {
+      tenant = detectTenant();
+      console.log("🔄 Tenant berganti:", tenant);
+      loadHeader();
+      loadGrid();
+    });
 
     // === CLOUDINARY CONFIG (isi punyamu) ===
     const CLOUD_NAME = "dfojor5pr";
@@ -724,7 +724,7 @@ window.addEventListener("hashchange", () => {
           const id = btn.dataset.del;
           showConfirm("Hapus link ini?", "warning", async () => {
             try {
-              await updateDoc(doc(db, "grid_links", id), { active: chk.checked });
+              await deleteDoc(doc(db, "users", tenant, "grid_links", id));
               // bersihkan tombol lama di dalam toast
               const oldActions = toast.querySelector(".toast-actions");
               if (oldActions) oldActions.remove();
@@ -778,11 +778,6 @@ window.addEventListener("hashchange", () => {
     // ===================== AUTH =====================
     import { getIdTokenResult } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-    // Ambil tenant dari URL (?@tenant atau /@tenant)
-    const matchTenant = window.location.search.match(/@([^&]+)/) || window.location.pathname.match(/@([^/]+)/);
-    const tenantFromURL = matchTenant ? matchTenant[1].toLowerCase() : "tommy";
-    console.log("Tenant URL:", tenantFromURL);
-
     // Tombol Login
     loginBtn.addEventListener("click", async () => {
       try {
@@ -814,10 +809,11 @@ window.addEventListener("hashchange", () => {
             user.email === "tommy@tommy.or.id";
 
           // Batasi akses lintas tenant
-          if (!isSuperadmin && tenantFromClaim !== tenantFromURL) {
+          if (!isSuperadmin && tenantFromClaim !== tenant) {
             showModal(
-              `🚫 Akses ditolak untuk tenant @${tenantFromURL}.
+              `🚫 Akses ditolak untuk tenant @${tenant}.
 Akun Anda terdaftar di tenant @${tenantFromClaim || "tidak diketahui"}.`,
+
               "error",
               async () => {
                 await signOut(auth);
@@ -830,7 +826,7 @@ Akun Anda terdaftar di tenant @${tenantFromClaim || "tidak diketahui"}.`,
           // Jika lolos verifikasi
           loginSection.style.display = "none";
           dashboard.style.display = "block";
-          title.textContent = `Links Grid Admin @${tenantFromURL}`;
+          title.textContent = `Links Grid Admin @${tenant}`;
           showToast(`Login sebagai ${user.email}`, "success");
 
           // Muat data
