@@ -2,41 +2,47 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      text-align: center;
-      padding-top: 20vh;
-      color: #555;
-      background: #fafafa;
-    }
-  </style>
+  <title>Mengarahkan...</title>
+  <meta name="robots" content="noindex">
+  <script>
+    window.onload = () => {
+      const path = window.location.pathname; // contoh: "/tujamsos" atau "/admin.html/tujamsos"
+      console.log("404 intercept:", path);
+
+      // Daftar path yang tidak boleh dianggap tenant
+      const reserved = [
+        "", "/", "index", "index.html",
+        "admin", "admin.html",
+        "super-admin", "super-admin.html",
+        "404.html"
+      ];
+
+      // === 1️⃣ Jika /admin.html/namaTenant → redirect ke /admin.html?u=namaTenant ===
+      const matchAdmin = path.match(/^\/admin\.html\/([\w-]+)$/);
+      if (matchAdmin) {
+        const tenant = matchAdmin[1];
+        window.location.replace(`/admin.html?u=${tenant}`);
+        return;
+      }
+
+      // === 2️⃣ Jika /namaTenant langsung (dan bukan reserved) → redirect ke /?u=namaTenant ===
+      const matchTenant = path.match(/^\/([\w-]+)$/);
+      if (matchTenant) {
+        const tenant = matchTenant[1];
+        if (!reserved.includes(tenant)) {
+          window.location.replace(`/?u=${tenant}`);
+          return;
+        }
+      }
+
+      // === 3️⃣ Selain itu, fallback ke tenant default ===
+      window.location.replace("/?u=tommy");
+    };
+  </script>
 </head>
 <body>
-  <h2>Mengarahkan ke halaman utama...</h2>
-  <p>Jika tidak otomatis, <a id="manualLink" href="#">klik di sini</a>.</p>
-
-  <script>
-    // ambil path lengkap (misal: /index.html/@pempro)
-    let fullPath = window.location.pathname + window.location.search + window.location.hash;
-
-    // hapus /index.html dari path jika ada
-    fullPath = fullPath.replace(/\/index\.html/, '');
-
-    // tambahkan flag agar tidak looping
-    const alreadyRedirected = window.location.search.includes('r=1');
-    const separator = fullPath.includes('?') ? '&' : '?';
-    const newUrl = window.location.origin + fullPath + separator + 'r=1';
-
-    // set link manual
-    document.getElementById('manualLink').href = newUrl;
-
-    // redirect otomatis satu kali
-    if (!alreadyRedirected) {
-      window.location.replace(newUrl);
-    }
-  </script>
+  <p style="font-family:sans-serif; text-align:center; margin-top:30vh;">
+    Mengarahkan ke halaman tenant...
+  </p>
 </body>
 </html>
