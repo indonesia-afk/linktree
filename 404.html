@@ -19,20 +19,21 @@
   <p>Jika tidak otomatis, <a id="manualLink" href="#">klik di sini</a>.</p>
 
   <script>
-    // === Ambil path dan query lengkap dari URL saat ini ===
-    const fullPath = window.location.pathname + window.location.search + window.location.hash;
+    // ambil path lengkap (misal: /index.html/@pempro)
+    let fullPath = window.location.pathname + window.location.search + window.location.hash;
 
-    // === Cek apakah sudah pernah redirect (ada ?r=1) ===
+    // hapus /index.html dari path jika ada
+    fullPath = fullPath.replace(/\/index\.html/, '');
+
+    // tambahkan flag agar tidak looping
     const alreadyRedirected = window.location.search.includes('r=1');
-
-    // Tentukan pemisah antara query lama dan parameter baru
     const separator = fullPath.includes('?') ? '&' : '?';
-    const newUrl = window.location.origin + '/index.html' + fullPath + separator + 'r=1';
+    const newUrl = window.location.origin + fullPath + separator + 'r=1';
 
-    // Set tautan manual
+    // set link manual
     document.getElementById('manualLink').href = newUrl;
 
-    // Jalankan redirect otomatis hanya sekali
+    // redirect otomatis satu kali
     if (!alreadyRedirected) {
       window.location.replace(newUrl);
     }
