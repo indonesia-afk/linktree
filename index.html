@@ -54,30 +54,38 @@
       place-items: center;
     }
 
-    .logo-icon {
-      font-size: 3.5em;
-      color: #3182ce;
-      margin-bottom: 15px;
+    /* ===== Logo ATAS (dinamis dari Firestore, responsif) ===== */
+    .logo-top {
+      margin: 0 0 16px 0;
+      text-align: center;
     }
 
-    .logo-image {
-      margin-bottom: 15px;
-    }
-
-    .logo-img-card {
-      width: 100%;
-      max-width: 260px;
+    .logo-img-top {
+      width: auto;
       height: auto;
+      max-width: 220px;
+      /* batas lebar maksimum */
+      max-height: 140px;
+      /* batas tinggi maksimum (desktop) */
       object-fit: contain;
-      display: block;
-      margin: 0 auto;
-      transition: transform 0.3s ease;
+      display: inline-block;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.98;
     }
 
-    .logo-img-card:hover {
+    @media (max-width: 500px) {
+      .logo-img-top {
+        max-width: 160px;
+        /* sedikit lebih kecil di mobile */
+        max-height: 100px;
+        /* tinggi maksimum turun */
+      }
+    }
+
+    .logo-img-top:hover {
       transform: scale(1.04);
+      opacity: 1;
     }
-
 
     .title {
       font-size: 1.6em;
@@ -134,7 +142,6 @@
       color: #4a5568;
     }
 
-    /* teks auto-resize dan mobile peek */
     .grid-item span {
       font-weight: 500;
       font-size: .9em;
@@ -150,15 +157,14 @@
       transition: all .3s ease;
     }
 
-    @media (max-width:600px) {
+    @media(max-width:600px) {
       .grid-item span {
         -webkit-line-clamp: 4;
         line-clamp: 4;
       }
-
     }
 
-    @media (hover:hover) {
+    @media(hover:hover) {
       .grid-item:hover span {
         -webkit-line-clamp: unset;
         line-clamp: unset;
@@ -171,8 +177,29 @@
       }
     }
 
+    /* ===== Logo BAWAH (tetap/legacy dekat footer) ===== */
+    .logo-image {
+      margin-top: 36px;
+      text-align: center;
+    }
+
+    .logo-img-card {
+      width: 100%;
+      max-width: 240px;
+      height: auto;
+      object-fit: contain;
+      display: inline-block;
+      opacity: .9;
+      transition: transform .3s ease, opacity .3s ease;
+    }
+
+    .logo-img-card:hover {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+
     footer {
-      margin-top: 20px;
+      margin-top: 10px;
       font-size: .9em;
       color: #a0aec0;
     }
@@ -186,7 +213,7 @@
       text-decoration: underline;
     }
 
-    /* dark mode */
+    /* Dark mode */
     body.dark-mode {
       background: #121212;
       color: #e2e8f0;
@@ -212,7 +239,12 @@
       color: #fff;
     }
 
-    /* toast notification */
+    body.dark-mode .logo-img-top,
+    body.dark-mode .logo-img-card {
+      filter: brightness(1.08) contrast(1.05);
+    }
+
+    /* Toast */
     .toast {
       position: fixed;
       left: 50%;
@@ -252,12 +284,9 @@
       color: #e2e8f0;
     }
 
-    /* ===== PERBAIKAN: hover text di mode gelap ===== */
     body.dark-mode .grid-item:hover span {
       background: rgba(34, 34, 34, 0.95);
-      /* ganti latar jadi gelap transparan */
       color: #fff;
-      /* pastikan teks tetap terlihat */
     }
   </style>
 </head>
@@ -266,23 +295,28 @@
   <div class="card">
     <button id="theme-switcher"><i class="fas fa-moon"></i></button>
 
-  <div class="logo-image">
-    <picture>
-      <source srcset="logo-header.webp" type="image/webp">
-      <img src="logo-header.png" alt="Logo Portal" class="logo-img-card">
-    </picture>
-  </div>
+    <!-- LOGO ATAS (dinamis dari Firestore) -->
+    <div class="logo-top">
+      <img src="logo-header.png" alt="Logo Atas" class="logo-img-top" id="topLogo">
+    </div>
 
     <h1 id="mainTitle" class="title">LINKS GRID by @TOMMY</h1>
     <p id="subTitle" class="description">Powered by https://espeje.com</p>
     <p id="infoText" class="info-text"></p>
     <div id="gridContainer" class="icon-grid"></div>
+
+    <!-- LOGO BAWAH (tetap, klik menuju espeje.com) -->
+    <div class="logo-image">
+      <a href="https://espeje.com" target="_blank" rel="noopener noreferrer">
+        <img src="logo-header.png" alt="Logo Portal" class="logo-img-card">
+      </a>
+    </div>
+
     <footer>
       Links Grid @TOMMY<br>
-      Powered by <a href="https://espeje.com" target="_blank" rel="noopener noreferrer">https://espeje.com</a><br>
-      <a href="https://news.t-o-m.my.id" target="_blank" rel="noopener noreferrer">Informasi &amp; Berita</a>
+      Powered by <a href="https://espeje.com" target="_blank">https://espeje.com</a><br>
+      <a href="https://news.t-o-m.my.id" target="_blank">Informasi &amp; Berita</a>
     </footer>
-
   </div>
 
   <div id="toast" class="toast">
@@ -298,21 +332,46 @@
       apiKey: "AIzaSyCP2dnXfeRR57NNYarJSYtBDjve8K-bOd8",
       authDomain: "linktree-wannabe.firebaseapp.com",
       projectId: "linktree-wannabe",
-      storageBucket: "linktree-wannabe.appspot.com",
+      storageBucket: "linktree-wannabe.firebasestorage.app",
       messagingSenderId: "246673617043",
-      appId: "1:246673617043:web:573d5386df8b29c945dd66"
+      appId: "1:246673617043:web:573d5386df8b29c945dd66",
+      measurementId: "G-EFBN04G0X9"
     };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // === Tenant autodetect: bisa dari path "/@tenant" atau query "?@tenant"
+    let tenant = "tommy";
+    const pathMatch = window.location.pathname.match(/@([^/]+)/);
+    const queryMatch = window.location.search.match(/@([^&]+)/);
+
+    if (pathMatch) {
+      tenant = pathMatch[1].toLowerCase();
+    } else if (queryMatch) {
+      tenant = queryMatch[1].toLowerCase();
+    }
+
+    console.log("Tenant aktif:", tenant);
+
+
+    // elemen DOM
+    const mainTitle = document.getElementById("mainTitle");
+    const subTitle = document.getElementById("subTitle");
+    const gridContainer = document.getElementById("gridContainer");
+    const infoText = document.getElementById("infoText");
+    const topLogo = document.getElementById("topLogo");
+
     /* Toast */
-    const toast = document.getElementById("toast"), toastMsg = document.getElementById("toastMsg"), toastBtn = document.getElementById("toastBtn");
+    const toast = document.getElementById("toast"),
+      toastMsg = document.getElementById("toastMsg"),
+      toastBtn = document.getElementById("toastBtn");
     let toastTimer = null;
     function hideToast() { toast.classList.remove("show"); toastBtn.style.display = "none"; clearTimeout(toastTimer); }
     function showToast(msg, type = "info", ms = 2000) { toastMsg.textContent = msg; toastBtn.style.display = "none"; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, ms); }
     function showModal(msg, type = "info", onOk = () => { }) { toastMsg.textContent = msg; toastBtn.style.display = "inline-block"; toast.classList.add("show"); clearTimeout(toastTimer); toastBtn.onclick = () => { hideToast(); onOk(); }; }
 
-    /* ICON map unique set */
+    /* ICON map */
     const ICON_GROUPS = {
       dokumen: ["fa-file-alt", "fa-file-lines", "fa-file-contract", "fa-file-word", "fa-file-circle-check"],
       pdf: ["fa-file-pdf", "fa-file-invoice"],
@@ -330,12 +389,7 @@
       misc: ["fa-star", "fa-rocket", "fa-lightbulb", "fa-layer-group", "fa-heart", "fa-circle-check"]
     };
     const usedIcons = new Set(), MASTER_POOL = [...new Set(Object.values(ICON_GROUPS).flat())];
-    function takeUniqueFrom(arr) {
-      for (const ic of arr) { if (!usedIcons.has(ic)) { usedIcons.add(ic); return ic; } }
-      const rest = MASTER_POOL.filter(ic => !usedIcons.has(ic));
-      if (rest.length) { const ic = rest[Math.floor(Math.random() * rest.length)]; usedIcons.add(ic); return ic; }
-      return arr[0];
-    }
+    function takeUniqueFrom(arr) { for (const ic of arr) { if (!usedIcons.has(ic)) { usedIcons.add(ic); return ic; } } const rest = MASTER_POOL.filter(ic => !usedIcons.has(ic)); if (rest.length) { const ic = rest[Math.floor(Math.random() * rest.length)]; usedIcons.add(ic); return ic; } return arr[0]; }
     function iconFromName(name) {
       const n = (name || "").toLowerCase();
       if (/(pdf|unduhan|download)/.test(n)) return takeUniqueFrom(ICON_GROUPS.pdf);
@@ -354,67 +408,78 @@
       return takeUniqueFrom(ICON_GROUPS.misc);
     }
 
-    /* Auto resize text */
     function autoResizeText(span) {
-      let size = 16;
-      span.style.fontSize = size + "px";
-      const box = span.parentElement;
-      const maxW = box.clientWidth * 0.9;
-      const maxH = box.clientHeight * 0.4;
-      while ((span.scrollWidth > maxW || span.scrollHeight > maxH) && size > 10) {
-        size -= 1; span.style.fontSize = size + "px";
-      }
+      let size = 16; span.style.fontSize = size + "px";
+      const box = span.parentElement, maxW = box.clientWidth * 0.9, maxH = box.clientHeight * 0.4;
+      while ((span.scrollWidth > maxW || span.scrollHeight > maxH) && size > 10) { size -= 1; span.style.fontSize = size + "px"; }
       if (span.scrollHeight > maxH * 1.1) { span.title = span.textContent; }
     }
 
-    /* Header + Grid */
+    /* Header */
     async function loadHeader() {
-      const snap = await getDoc(doc(db, "site_header", "main"));
-      if (snap.exists()) { const d = snap.data(); mainTitle.textContent = d.mainTitle || "LINKS GRID by @TOMMY"; subTitle.textContent = d.subTitle || "Powered by https://espeje.com"; }
+      try {
+        const snap = await getDoc(doc(db, "users", tenant, "site_header", "main"));
+        if (!snap.exists()) {
+          showToast("Data header belum tersedia");
+          return;
+        }
+
+        const d = snap.data();
+        mainTitle.textContent = d.mainTitle || "LINKS GRID by @TOMMY";
+        subTitle.textContent = d.subTitle || "Powered by https://espeje.com";
+
+        // ==== LOGO ATAS ====
+        if (topLogo) {
+          if (d.logoUrl && d.logoUrl.trim() !== "") {
+            // pakai logo custom dari Firestore (upload admin)
+            topLogo.src = d.logoUrl;
+          } else {
+            // fallback lokal dari root GitHub
+            topLogo.src = "logo-default.png";
+          }
+        }
+
+      } catch (e) {
+        showModal("Gagal memuat header: " + e.message, "error");
+      }
     }
 
+    /* Grid */
     async function loadGrid() {
-      const q = query(collection(db, "grid_links"), orderBy("order", "asc"));
+      const q = query(collection(db, "users", tenant, "grid_links"), orderBy("order", "asc"));
       const snapshot = await getDocs(q);
       gridContainer.innerHTML = ""; usedIcons.clear();
       if (snapshot.empty) { infoText.style.display = "none"; return; }
-      infoText.style.display = "block";
-      let count = 0;
+      infoText.style.display = "block"; let count = 0;
       snapshot.forEach(docSnap => {
         const d = docSnap.data();
-        if (d.active === false) return;
-        if (count >= 12) return;
+        if (d.active === false) return; if (count >= 12) return;
         const icon = d.icon ? (usedIcons.has(d.icon) ? iconFromName(d.name) : (usedIcons.add(d.icon), d.icon)) : iconFromName(d.name);
         gridContainer.insertAdjacentHTML("beforeend", `
           <a href="${d.url}" target="_blank" rel="noopener noreferrer" class="grid-item">
-            <i class="fas ${icon}"></i>
-            <span>${d.name}</span>
+            <i class="fas ${icon}"></i><span>${d.name}</span>
           </a>`);
         const span = gridContainer.lastElementChild.querySelector("span");
-        autoResizeText(span);
-        count++;
+        autoResizeText(span); count++;
       });
-      enableTapReveal(); // aktifkan peek di mobile
+      enableTapReveal();
     }
 
-    /* Mobile tap to expand */
     function enableTapReveal() {
       if (window.matchMedia("(hover: none)").matches) {
         gridContainer.addEventListener("click", e => {
-          const card = e.target.closest(".grid-item");
-          if (!card) return;
-          const span = card.querySelector("span");
-          if (!span) return;
-          span.style.webkitLineClamp = "unset";
-          span.style.overflow = "visible";
+          const card = e.target.closest(".grid-item"); if (!card) return;
+          const span = card.querySelector("span"); if (!span) return;
+          span.style.webkitLineClamp = "unset"; span.style.overflow = "visible";
           setTimeout(() => { span.style.webkitLineClamp = "4"; span.style.overflow = "hidden"; }, 2500);
         });
       }
     }
 
+    /* Run */
     loadHeader(); loadGrid();
 
-    /* Theme */
+    /* Theme toggle */
     const themeSwitcher = document.getElementById("theme-switcher");
     const body = document.body;
     const themeIcon = themeSwitcher.querySelector("i");
@@ -426,8 +491,4 @@
   </script>
 </body>
 
-
 </html>
-
-
-
