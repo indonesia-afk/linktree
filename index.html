@@ -341,25 +341,27 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-// === Tenant autodetect: versi hash-based agar bekerja di GitHub Pages ===
-let tenant = "tommy"; // default tenant
-function detectTenant() {
-  const hash = window.location.hash; // contoh: "#/@pempro"
-  const match = hash.match(/@([\w-]+)/);
-  return match ? match[1].toLowerCase() : "tommy";
-}
+    // === Tenant autodetect: versi query-string pendek (?u=pempro) ===
+    let tenant = "tommy"; // default tenant utama
 
-// Set tenant pertama kali saat load
-tenant = detectTenant();
-console.log("Tenant aktif:", tenant);
+    function detectTenant() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("u");
+      return q ? q.toLowerCase() : "tommy";
+    }
 
-// Dengarkan perubahan hash untuk berpindah tenant tanpa reload
-window.addEventListener("hashchange", async () => {
-  tenant = detectTenant();
-  console.log("🔄 Tenant berganti:", tenant);
-  await loadHeader();
-  await loadGrid();
-});
+    tenant = detectTenant();
+    console.log("Tenant aktif:", tenant);
+
+    window.addEventListener("popstate", async () => {
+      const newTenant = detectTenant();
+      if (newTenant !== tenant) {
+        tenant = newTenant;
+        console.log("🔄 Tenant berganti:", tenant);
+        await loadHeader();
+        await loadGrid();
+      }
+    });
 
     // elemen DOM
     const mainTitle = document.getElementById("mainTitle");

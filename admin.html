@@ -569,24 +569,27 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // === Tenant autodetect: versi hash-based agar kompatibel di GitHub Pages ===
-    let tenant = "tommy"; // default
+    // === Tenant autodetect: versi query-string pendek (?u=pempro) ===
+    let tenant = "tommy"; // default tenant utama
 
     function detectTenant() {
-      const hash = window.location.hash; // contoh: "#/@pempro/admin.html"
-      const match = hash.match(/@([\w-]+)/);
-      return match ? match[1].toLowerCase() : "tommy";
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("u");
+      return q ? q.toLowerCase() : "tommy";
     }
 
     tenant = detectTenant();
     console.log("Admin tenant:", tenant);
 
-    // Perbarui otomatis bila hash berubah (misal berpindah tenant tanpa reload)
-    window.addEventListener("hashchange", () => {
-      tenant = detectTenant();
-      console.log("🔄 Tenant berganti:", tenant);
-      loadHeader();
-      loadGrid();
+    // Jika tenant berubah lewat navigasi (mis. tombol back)
+    window.addEventListener("popstate", async () => {
+      const newTenant = detectTenant();
+      if (newTenant !== tenant) {
+        tenant = newTenant;
+        console.log("🔄 Tenant berganti:", tenant);
+        await loadHeader();
+        await loadGrid();
+      }
     });
 
     // === CLOUDINARY CONFIG (isi punyamu) ===

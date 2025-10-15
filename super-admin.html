@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -78,7 +79,9 @@
       margin-top: 8px;
     }
 
-    #logoutBtn:hover { background: #cbd5e0; }
+    #logoutBtn:hover {
+      background: #cbd5e0;
+    }
 
     /* ===== Daftar Tenant ===== */
     .tenant-list {
@@ -96,7 +99,8 @@
       font-size: .9em;
     }
 
-    th, td {
+    th,
+    td {
       padding: 10px 8px;
       border-bottom: 1px solid #e2e8f0;
       text-align: left;
@@ -109,7 +113,9 @@
       color: #2d3748;
     }
 
-    tr:hover td { background: #f1f5f9; }
+    tr:hover td {
+      background: #f1f5f9;
+    }
 
     .danger-btn {
       background: #e53e3e;
@@ -122,7 +128,9 @@
       transition: background .25s ease;
     }
 
-    .danger-btn:hover { background: #c53030; }
+    .danger-btn:hover {
+      background: #c53030;
+    }
 
     #refreshBtn {
       background: #63b3ed;
@@ -159,7 +167,9 @@
       margin-left: 6px;
     }
 
-    .tenant-link:hover { color: #2563eb; }
+    .tenant-link:hover {
+      color: #2563eb;
+    }
   </style>
 </head>
 
@@ -196,7 +206,9 @@
           </tr>
         </thead>
         <tbody id="tenantBody">
-          <tr><td colspan="4" style="text-align:center;">Memuat data...</td></tr>
+          <tr>
+            <td colspan="4" style="text-align:center;">Memuat data...</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -249,39 +261,39 @@
       return `${dd}/${mm}/${yy}`;
     }
 
-async function listTenants() {
-  row("Memuat data...");
-  const snap = await getDocs(collection(db, "admins"));
-  if (snap.empty) return row("Belum ada tenant");
-  tenantBody.innerHTML = "";
+    async function listTenants() {
+      row("Memuat data...");
+      const snap = await getDocs(collection(db, "admins"));
+      if (snap.empty) return row("Belum ada tenant");
+      tenantBody.innerHTML = "";
 
-  snap.forEach(docSnap => {
-    const d = docSnap.data();
-    const tenant = docSnap.id;
-    const email = d.email || "-";
-    const created = d.createdAt ? shortDate(d.createdAt) : "-";
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        const tenant = docSnap.id;
+        const email = d.email || "-";
+        const created = d.createdAt ? shortDate(d.createdAt) : "-";
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
       <td class="small-cell">
         ${tenant}
-        <a href="https://links.tommy.or.id/#/@${tenant}" target="_blank"
-           class="tenant-link" title="Lihat halaman tenant">🔗</a>
-      </td>
-      <td class="small-cell">
-        ${email}
-        <a href="https://links.tommy.or.id/#/@${tenant}/admin.html" target="_blank"
-           class="tenant-link" title="Buka panel admin @${tenant}">
-           <i class="fas fa-external-link-alt"></i>
+        <a href="https://links.tommy.or.id/?u=${tenant}" target="_blank"
+          class="tenant-link" title="Lihat halaman tenant">🔗</a>
+              </td>
+              <td class="small-cell">
+                ${email}
+        <a href="https://links.tommy.or.id/admin.html?u=${tenant}" target="_blank"
+          class="tenant-link" title="Buka panel admin @${tenant}">
+          <i class="fas fa-external-link-alt"></i>
         </a>
       </td>
       <td class="small-cell">${created}</td>
       <td style="text-align:center;">
         <button class="danger-btn" onclick="window.deleteTenant('${tenant}')">Hapus</button>
       </td>`;
-    tenantBody.appendChild(tr);
-  });
-}
+        tenantBody.appendChild(tr);
+      });
+    }
 
 
     window.deleteTenant = async function (tenant) {
@@ -341,11 +353,12 @@ async function listTenants() {
     });
 
     onAuthStateChanged(auth, (user) => {
-      if (user && user.uid === SUPER_UID) {
+      const allowedEmails = ["admin@tommy.or.id", "tommy@tommy.or.id"];
+      if (user && (user.uid === SUPER_UID || allowedEmails.includes(user.email))) {
         loginCard.style.display = "none";
         adminCard.style.display = "block";
         listTenants();
-      } else if (user && user.uid !== SUPER_UID) {
+      } else if (user && !allowedEmails.includes(user.email)) {
         alert("❌ Akses ditolak.");
         signOut(auth);
       } else {
@@ -359,4 +372,5 @@ async function listTenants() {
     refreshBtn.addEventListener("click", listTenants);
   </script>
 </body>
+
 </html>
