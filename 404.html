@@ -4,18 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecting...</title>
-  <script>
-    // === ambil path lengkap dari URL saat ini ===
-    const fullPath = window.location.pathname + window.location.search + window.location.hash;
-
-    // === redirect ke index.html, tapi simpan tenant path ===
-    const newUrl = window.location.origin + '/index.html' + fullPath;
-
-    window.location.replace(newUrl);
-  </script>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: system-ui, sans-serif;
       text-align: center;
       padding-top: 20vh;
       color: #555;
@@ -26,8 +17,25 @@
 <body>
   <h2>Mengarahkan ke halaman utama...</h2>
   <p>Jika tidak otomatis, <a id="manualLink" href="#">klik di sini</a>.</p>
+
   <script>
+    // === Ambil path dan query lengkap dari URL saat ini ===
+    const fullPath = window.location.pathname + window.location.search + window.location.hash;
+
+    // === Cek apakah sudah pernah redirect (ada ?r=1) ===
+    const alreadyRedirected = window.location.search.includes('r=1');
+
+    // Tentukan pemisah antara query lama dan parameter baru
+    const separator = fullPath.includes('?') ? '&' : '?';
+    const newUrl = window.location.origin + '/index.html' + fullPath + separator + 'r=1';
+
+    // Set tautan manual
     document.getElementById('manualLink').href = newUrl;
+
+    // Jalankan redirect otomatis hanya sekali
+    if (!alreadyRedirected) {
+      window.location.replace(newUrl);
+    }
   </script>
 </body>
 </html>
