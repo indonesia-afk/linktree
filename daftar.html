@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Buat Akun Links Grid – by @TOMMY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --transition: .3s;
+      --radius: 16px;
+      --primary: #3182ce;
+      --primary-dark: #2563eb;
+      --bg: #f4f7f9;
+      --text: #1a202c;
+      --border: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, .05);
+      padding: 35px 30px 28px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      position: relative;
+    }
+
+    h2 {
+      font-size: 1.4em;
+      margin-bottom: 24px;
+      color: #2d3748;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      max-width: 320px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: .95em;
+      transition: border var(--transition), box-shadow var(--transition);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(49, 130, 206, .2);
+    }
+
+    button {
+      width: 100%;
+      max-width: 320px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 1em;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .info-links {
+      margin-top: 16px;
+      font-size: .88em;
+      color: #4a5568;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .info-links a {
+      color: #2b6cb0;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .3s;
+      word-break: break-all;
+    }
+
+    .info-links a:hover {
+      color: #2563eb;
+    }
+
+    #msg {
+      margin-top: 14px;
+      font-size: .9em;
+      color: #4a5568;
+      white-space: pre-line;
+    }
+
+    .loading {
+      color: #3182ce;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-40px);
+      background: #2d3748;
+      color: #f7fafc;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: .9em;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, .15);
+      opacity: 0;
+      pointer-events: none;
+      transition: all .5s ease;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.success { background: #38a169; }
+    #toast.error { background: #e53e3e; }
+    #toast.info { background: #2b6cb0; }
+
+    /* ===== Footer Identik ===== */
+    .logo-image {
+      margin-top: 36px;
+      text-align: center;
+    }
+
+    .logo-img-card {
+      width: 100%;
+      max-width: 240px;
+      height: auto;
+      object-fit: contain;
+      display: inline-block;
+      opacity: .9;
+      transition: transform .3s ease, opacity .3s ease;
+    }
+
+    .logo-img-card:hover {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+
+    footer {
+      margin-top: 10px;
+      font-size: .9em;
+      color: #a0aec0;
+      text-align: center;
+    }
+
+    footer a {
+      color: #3182ce;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h2><i class="fa-solid fa-user-plus"></i><br>Buat Akun Links Grid</h2>
+
+    <div class="form-group">
+      <input id="user" placeholder="Nama User (huruf/angka saja)">
+      <input id="email" type="email" placeholder="Alamat Email">
+      <input id="pass" type="password" placeholder="Password">
+      <button id="buat">Buat Akun Links Grid</button>
+    </div>
+
+    <div class="info-links" id="infoLinks">
+      <p>🌐 Alamat URL Links Grid kamu:<br>
+        <a id="linkUser" href="#" target="_blank">https://links.tommy.or.id/...</a>
+      </p>
+      <p>🛠️ Halaman Admin kamu:<br>
+        <a id="linkAdmin" href="#" target="_blank">https://links.tommy.or.id/admin/...</a>
+      </p>
+    </div>
+
+    <div id="msg"></div>
+
+    <!-- === FOOTER SAMA SEPERTI PORTAL === -->
+    <div class="logo-image">
+      <a href="https://espeje.com" target="_blank" rel="noopener noreferrer">
+        <img src="logo-header.png" alt="Logo Portal" class="logo-img-card">
+      </a>
+    </div>
+
+    <footer>
+      Links Grid @TOMMY<br>
+      Powered by <a href="https://espeje.com" target="_blank">https://espeje.com</a><br>
+      <a href="https://news.t-o-m.my.id" target="_blank">Informasi &amp; Berita</a>
+    </footer>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const apiURL = "https://netlify-linktree.netlify.app/.netlify/functions/create-tenant";
+    const elUser = document.getElementById("user");
+    const elEmail = document.getElementById("email");
+    const elPass = document.getElementById("pass");
+    const elMsg = document.getElementById("msg");
+    const elBtn = document.getElementById("buat");
+    const toast = document.getElementById("toast");
+    const infoBox = document.getElementById("infoLinks");
+    const linkUser = document.getElementById("linkUser");
+    const linkAdmin = document.getElementById("linkAdmin");
+
+    function showToast(message, type = "info") {
+      toast.textContent = message;
+      toast.className = "show " + type;
+      setTimeout(() => toast.className = toast.className.replace("show", ""), 2500);
+    }
+
+    function isValidUserName(name) {
+      return /^[a-zA-Z0-9_-]{3,20}$/.test(name);
+    }
+
+    elUser.addEventListener("input", () => {
+      const user = elUser.value.trim().toLowerCase();
+      if (isValidUserName(user)) {
+        infoBox.style.display = "block";
+        linkUser.textContent = `https://links.tommy.or.id/${user}`;
+        linkUser.href = `https://links.tommy.or.id/${user}`;
+        linkAdmin.textContent = `https://links.tommy.or.id/admin/${user}`;
+        linkAdmin.href = `https://links.tommy.or.id/admin/${user}`;
+      } else {
+        infoBox.style.display = "none";
+      }
+    });
+
+    elBtn.addEventListener("click", async () => {
+      const user = (elUser.value || "").trim().toLowerCase();
+      const email = (elEmail.value || "").trim();
+      const pass = (elPass.value || "").trim();
+
+      if (!user || !email || !pass) {
+        showToast("Isi semua kolom!", "error");
+        return;
+      }
+
+      if (!isValidUserName(user)) {
+        showToast("Nama user hanya huruf, angka, - atau _ (3–20 karakter)", "error");
+        return;
+      }
+
+      elMsg.textContent = "⏳ Mengecek nama user...";
+      elMsg.classList.add("loading");
+      elBtn.disabled = true;
+
+      try {
+        const resCheck = await fetch(apiURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tenantName: user, checkOnly: true })
+        });
+        const check = await resCheck.json();
+        if (check.exists) {
+          elMsg.classList.remove("loading");
+          showToast("Nama user sudah terpakai!", "error");
+          elMsg.textContent = "❌ User sudah ada, gunakan nama lain.";
+          elBtn.disabled = false;
+          return;
+        }
+
+        elMsg.textContent = "🛠 Membuat akun user baru...";
+        const res = await fetch(apiURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tenantName: user, email, password: pass })
+        });
+
+        const data = await res.json();
+        elMsg.classList.remove("loading");
+
+        if (data.success) {
+          showToast("Akun berhasil dibuat!", "success");
+          elMsg.textContent = "✅ Akun berhasil dibuat.\nMengalihkan ke panel admin...";
+          setTimeout(() => {
+            window.location.href = `admin.html?u=${data.tenant}`;
+          }, 2000);
+        } else {
+          showToast("Gagal membuat akun", "error");
+          elMsg.textContent = "❌ " + (data.error || "Terjadi kesalahan tak dikenal.");
+        }
+      } catch (err) {
+        elMsg.classList.remove("loading");
+        showToast("Kesalahan koneksi", "error");
+        elMsg.textContent = "🚫 Koneksi gagal: " + err.message;
+      } finally {
+        elBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
+</html>

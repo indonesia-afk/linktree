@@ -296,18 +296,30 @@
       });
     }
 
-
     window.deleteTenant = async function (tenant) {
       if (!confirm(`Hapus tenant '${tenant}'?`)) return;
       row(`Menghapus ${tenant}...`);
+
       try {
-        await deleteDoc(doc(db, "admins", tenant));
-        await deleteDoc(doc(db, "users", tenant, "site_header", "main"));
-        const gridSnap = await getDocs(collection(db, "users", tenant, "grid_links"));
-        for (const g of gridSnap.docs) await deleteDoc(g.ref);
-        await listTenants();
+        const res = await fetch("https://netlify-linktree.netlify.app/.netlify/functions/delete-tenant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tenant })
+        });
+
+        const out = await res.json();
+
+        if (out.success) {
+          alert(`✅ Tenant '${tenant}' berhasil dihapus (termasuk akun Auth).`);
+          await listTenants();
+        } else {
+          alert(`❌ Gagal menghapus tenant: ${out.error || "Terjadi kesalahan."}`);
+          row(`❌ Gagal: ${out.error || "Terjadi kesalahan."}`);
+        }
+
       } catch (e) {
-        row(`❌ Gagal: ${e.message}`);
+        console.error("Delete error:", e);
+        row(`❌ Gagal koneksi: ${e.message}`);
       }
     };
 
