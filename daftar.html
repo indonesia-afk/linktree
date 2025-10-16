@@ -204,6 +204,10 @@
       <input id="user" placeholder="Nama User (huruf/angka saja)">
       <input id="email" type="email" placeholder="Alamat Email">
       <input id="pass" type="password" placeholder="Password">
+
+      <!-- Honeypot (tidak terlihat oleh manusia). Tetap dikirim, agar server bisa cek juga -->
+      <input type="text" id="favorite_color" name="favorite_color" autocomplete="off" style="display:none">
+
       <button id="buat">Buat Akun Links Grid</button>
     </div>
 
@@ -273,6 +277,13 @@
       const user = (elUser.value || "").trim().toLowerCase();
       const email = (elEmail.value || "").trim();
       const pass = (elPass.value || "").trim();
+      const honeypot = (document.getElementById("favorite_color").value || "").trim();
+
+      // Client-side honeypot short-circuit (user-friendly)
+      if (honeypot) {
+        showToast("Terdeteksi sebagai bot!", "error");
+        return;
+      }
 
       if (!user || !email || !pass) {
         showToast("Isi semua kolom!", "error");
@@ -289,10 +300,11 @@
       elBtn.disabled = true;
 
       try {
+        // cek availability
         const resCheck = await fetch(apiURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tenantName: user, checkOnly: true })
+          body: JSON.stringify({ tenantName: user, checkOnly: true, favorite_color: honeypot })
         });
         const check = await resCheck.json();
         if (check.exists) {
@@ -307,7 +319,7 @@
         const res = await fetch(apiURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tenantName: user, email, password: pass })
+          body: JSON.stringify({ tenantName: user, email, password: pass, favorite_color: honeypot })
         });
 
         const data = await res.json();
@@ -333,6 +345,4 @@
     });
   </script>
 </body>
-
 </html>
-
