@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Buat Akun Links Grid – by @TOMMY</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     :root {
       --transition: .3s;
@@ -39,7 +39,7 @@
       box-shadow: 0 6px 25px rgba(0, 0, 0, .05);
       padding: 35px 30px 28px;
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
       text-align: center;
       position: relative;
       box-sizing: border-box;
@@ -47,8 +47,59 @@
 
     h2 {
       font-size: 1.4em;
-      margin-bottom: 24px;
+      margin-bottom: 14px;
       color: #2d3748;
+    }
+
+    .info-links {
+      font-size: .88em;
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      display: none;
+      text-align: center;
+    }
+
+    .info-links p {
+      margin: 6px 0;
+    }
+
+    .info-links a {
+      color: #2b6cb0;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .3s;
+      word-break: break-all;
+    }
+
+    .info-links a:hover {
+      color: #2563eb;
+    }
+
+    /* ==== Pesan status pindah ke atas field ==== */
+    #msg {
+      font-size: .9em;
+      color: #4a5568;
+      margin: 10px 0 16px;
+      min-height: 22px;
+      white-space: pre-line;
+    }
+
+    .loading {
+      color: #3182ce;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
     }
 
     .form-group {
@@ -93,44 +144,6 @@
       transform: translateY(-2px);
     }
 
-    .info-links {
-      margin-top: 16px;
-      font-size: .88em;
-      color: #4a5568;
-      line-height: 1.6;
-      display: none;
-    }
-
-    .info-links a {
-      color: #2b6cb0;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color .3s;
-      word-break: break-all;
-    }
-
-    .info-links a:hover {
-      color: #2563eb;
-    }
-
-    #msg {
-      margin-top: 14px;
-      font-size: .9em;
-      color: #4a5568;
-      white-space: pre-line;
-    }
-
-    .loading {
-      color: #3182ce;
-      animation: blink 1.2s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    /* Toast */
     #toast {
       position: fixed;
       top: 20px;
@@ -153,11 +166,18 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    #toast.success { background: #38a169; }
-    #toast.error { background: #e53e3e; }
-    #toast.info { background: #2b6cb0; }
+    #toast.success {
+      background: #38a169;
+    }
 
-    /* ===== Footer Identik ===== */
+    #toast.error {
+      background: #e53e3e;
+    }
+
+    #toast.info {
+      background: #2b6cb0;
+    }
+
     .logo-image {
       margin-top: 36px;
       text-align: center;
@@ -193,6 +213,30 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 28px 22px 24px;
+        border-radius: 16px;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .info-links {
+        font-size: .85em;
+      }
+
+      input,
+      button {
+        max-width: 100%;
+      }
+
+      .logo-img-card {
+        max-width: 180px;
+      }
+    }
   </style>
 </head>
 
@@ -200,17 +244,7 @@
   <div class="card">
     <h2><i class="fa-solid fa-user-plus"></i><br>Buat Akun Links Grid</h2>
 
-    <div class="form-group">
-      <input id="user" placeholder="Nama User (huruf/angka saja)">
-      <input id="email" type="email" placeholder="Alamat Email">
-      <input id="pass" type="password" placeholder="Password">
-
-      <!-- Honeypot (tidak terlihat oleh manusia). Tetap dikirim, agar server bisa cek juga -->
-      <input type="text" id="favorite_color" name="favorite_color" autocomplete="off" style="display:none">
-
-      <button id="buat">Buat Akun Links Grid</button>
-    </div>
-
+    <!-- Info link tetap -->
     <div class="info-links" id="infoLinks">
       <p>🌐 Alamat URL Links Grid kamu:<br>
         <a id="linkUser" href="#" target="_blank">https://links.tommy.or.id/...</a>
@@ -220,9 +254,19 @@
       </p>
     </div>
 
+    <!-- Pesan status dipindah ke atas field -->
     <div id="msg"></div>
 
-    <!-- === FOOTER SAMA SEPERTI PORTAL === -->
+    <div class="form-group">
+      <input id="user" placeholder="User Name (huruf/angka saja)">
+      <input id="email" type="email" placeholder="Email Address">
+      <input id="pass" type="password" placeholder="Password">
+      <input id="pass2" type="password" placeholder="Conform Password">
+      <input type="text" id="favorite_color" name="favorite_color" autocomplete="off" style="display:none">
+      <button id="buat">Buat Akun Links Grid</button>
+    </div>
+
+
     <div class="logo-image">
       <a href="https://espeje.com" target="_blank" rel="noopener noreferrer">
         <img src="logo-header.png" alt="Logo Portal" class="logo-img-card">
@@ -279,19 +323,13 @@
       const pass = (elPass.value || "").trim();
       const honeypot = (document.getElementById("favorite_color").value || "").trim();
 
-      // Client-side honeypot short-circuit (user-friendly)
-      if (honeypot) {
-        showToast("Terdeteksi sebagai bot!", "error");
-        return;
-      }
+      if (honeypot) return showToast("Terdeteksi sebagai bot!", "error");
+      if (!user || !email || !pass) return showToast("Isi semua kolom!", "error");
+      if (!isValidUserName(user)) return showToast("Nama user hanya huruf, angka, - atau _ (3–20 karakter)", "error");
 
-      if (!user || !email || !pass) {
-        showToast("Isi semua kolom!", "error");
-        return;
-      }
-
-      if (!isValidUserName(user)) {
-        showToast("Nama user hanya huruf, angka, - atau _ (3–20 karakter)", "error");
+      const pass2 = (document.getElementById("pass2").value || "").trim();
+      if (pass !== pass2) {
+        showToast("Password tidak cocok!", "error");
         return;
       }
 
@@ -300,7 +338,6 @@
       elBtn.disabled = true;
 
       try {
-        // cek availability
         const resCheck = await fetch(apiURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -309,7 +346,7 @@
         const check = await resCheck.json();
         if (check.exists) {
           elMsg.classList.remove("loading");
-          showToast("Nama user sudah terpakai!", "error");
+          showToast("Nama user sudah terpakai! Gunakan nama lain", "error");
           elMsg.textContent = "❌ User sudah ada, gunakan nama lain.";
           elBtn.disabled = false;
           return;
@@ -326,12 +363,32 @@
         elMsg.classList.remove("loading");
 
         if (data.success) {
+          const adminURL = `https://links.tommy.or.id/admin/${data.tenant}`;
           showToast("Akun berhasil dibuat!", "success");
-          elMsg.textContent = "✅ Akun berhasil dibuat.\nMengalihkan ke panel admin...";
-          setTimeout(() => {
-            window.location.href = `admin.html?u=${data.tenant}`;
-          }, 2000);
-        } else {
+
+          elMsg.innerHTML = `
+            ✅ Akun <b>${data.tenant}</b> berhasil dibuat!<br>
+            🛠️ Halaman Admin kamu:<br>
+            <a href="${adminURL}" target="_blank">${adminURL}</a><br>
+            Browser akan membuka halaman admin kamu sebentar lagi...
+          `;
+
+          let countdown = 10;
+          const interval = setInterval(() => {
+            elMsg.innerHTML = `
+            ✅ Akun <b>${data.tenant}</b> berhasil dibuat!<br>
+            🛠️ Halaman Admin kamu:<br>
+            <a href="${adminURL}" target="_blank">${adminURL}</a><br>
+            Browser akan membuka halaman admin kamu dalam ${countdown} detik...
+          `;
+            countdown--;
+            if (countdown < 0) {
+              clearInterval(interval);
+              window.location.href = `admin.html?u=${data.tenant}`;
+            }
+          }, 1000);
+        }
+        else {
           showToast("Gagal membuat akun", "error");
           elMsg.textContent = "❌ " + (data.error || "Terjadi kesalahan tak dikenal.");
         }
@@ -345,4 +402,5 @@
     });
   </script>
 </body>
+
 </html>
