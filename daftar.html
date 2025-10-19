@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Buat Akun Links Grid – by @TOMMY</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -76,11 +75,10 @@
       color: #2563eb;
     }
 
-    /* ==== Pesan status pindah ke atas field ==== */
     #msg {
       font-size: .9em;
       color: #4a5568;
-      margin: 10px 0 16px;
+      margin-top: 14px;
       min-height: 22px;
       white-space: pre-line;
     }
@@ -91,15 +89,8 @@
     }
 
     @keyframes blink {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.4;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
     .form-group {
@@ -107,7 +98,7 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
 
     input {
@@ -166,17 +157,9 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    #toast.success {
-      background: #38a169;
-    }
-
-    #toast.error {
-      background: #e53e3e;
-    }
-
-    #toast.info {
-      background: #2b6cb0;
-    }
+    #toast.success { background: #38a169; }
+    #toast.error { background: #e53e3e; }
+    #toast.info { background: #2b6cb0; }
 
     .logo-image {
       margin-top: 36px;
@@ -215,27 +198,11 @@
     }
 
     @media (max-width: 480px) {
-      .card {
-        padding: 28px 22px 24px;
-        border-radius: 16px;
-      }
-
-      h2 {
-        font-size: 1.2em;
-      }
-
-      .info-links {
-        font-size: .85em;
-      }
-
-      input,
-      button {
-        max-width: 100%;
-      }
-
-      .logo-img-card {
-        max-width: 180px;
-      }
+      .card { padding: 28px 22px 24px; border-radius: 16px; }
+      h2 { font-size: 1.2em; }
+      .info-links { font-size: .85em; }
+      input, button { max-width: 100%; }
+      .logo-img-card { max-width: 180px; }
     }
   </style>
 </head>
@@ -244,7 +211,6 @@
   <div class="card">
     <h2><i class="fa-solid fa-user-plus"></i><br>Buat Akun Links Grid</h2>
 
-    <!-- Info link tetap -->
     <div class="info-links" id="infoLinks">
       <p>🌐 Alamat URL Links Grid kamu:<br>
         <a id="linkUser" href="#" target="_blank">https://links.tommy.or.id/...</a>
@@ -254,18 +220,16 @@
       </p>
     </div>
 
-    <!-- Pesan status dipindah ke atas field -->
-    <div id="msg"></div>
-
     <div class="form-group">
       <input id="user" placeholder="User Name (huruf/angka saja)">
       <input id="email" type="email" placeholder="Email Address">
       <input id="pass" type="password" placeholder="Password">
-      <input id="pass2" type="password" placeholder="Conform Password">
+      <input id="pass2" type="password" placeholder="Confirm Password">
       <input type="text" id="favorite_color" name="favorite_color" autocomplete="off" style="display:none">
       <button id="buat">Buat Akun Links Grid</button>
     </div>
 
+    <div id="msg"></div>
 
     <div class="logo-image">
       <a href="https://espeje.com" target="_blank" rel="noopener noreferrer">
@@ -321,17 +285,13 @@
       const user = (elUser.value || "").trim().toLowerCase();
       const email = (elEmail.value || "").trim();
       const pass = (elPass.value || "").trim();
+      const pass2 = (document.getElementById("pass2").value || "").trim();
       const honeypot = (document.getElementById("favorite_color").value || "").trim();
 
       if (honeypot) return showToast("Terdeteksi sebagai bot!", "error");
       if (!user || !email || !pass) return showToast("Isi semua kolom!", "error");
       if (!isValidUserName(user)) return showToast("Nama user hanya huruf, angka, - atau _ (3–20 karakter)", "error");
-
-      const pass2 = (document.getElementById("pass2").value || "").trim();
-      if (pass !== pass2) {
-        showToast("Password tidak cocok!", "error");
-        return;
-      }
+      if (pass !== pass2) return showToast("Password tidak cocok!", "error");
 
       elMsg.textContent = "⏳ Mengecek nama user...";
       elMsg.classList.add("loading");
@@ -365,30 +325,25 @@
         if (data.success) {
           const adminURL = `https://links.tommy.or.id/admin/${data.tenant}`;
           showToast("Akun berhasil dibuat!", "success");
-
-          elMsg.innerHTML = `
-            ✅ Akun <b>${data.tenant}</b> berhasil dibuat!<br>
-            🛠️ Halaman Admin kamu:<br>
-            <a href="${adminURL}" target="_blank">${adminURL}</a><br>
-            Browser akan membuka halaman admin kamu sebentar lagi...
-          `;
-
           let countdown = 10;
-          const interval = setInterval(() => {
+          const updateMsg = () => {
             elMsg.innerHTML = `
-            ✅ Akun <b>${data.tenant}</b> berhasil dibuat!<br>
-            🛠️ Halaman Admin kamu:<br>
-            <a href="${adminURL}" target="_blank">${adminURL}</a><br>
-            Browser akan membuka halaman admin kamu dalam ${countdown} detik...
-          `;
+              ✅ Akun <b>${data.tenant}</b> berhasil dibuat!<br>
+              🛠️ Halaman Admin kamu:
+              <a href="${adminURL}" target="_blank">${adminURL}</a><br>
+              Browser akan membuka halaman admin kamu dalam ${countdown} detik...
+            `;
+          };
+          updateMsg();
+          const interval = setInterval(() => {
             countdown--;
+            updateMsg();
             if (countdown < 0) {
               clearInterval(interval);
               window.location.href = `admin.html?u=${data.tenant}`;
             }
           }, 1000);
-        }
-        else {
+        } else {
           showToast("Gagal membuat akun", "error");
           elMsg.textContent = "❌ " + (data.error || "Terjadi kesalahan tak dikenal.");
         }
@@ -402,5 +357,4 @@
     });
   </script>
 </body>
-
 </html>
