@@ -23,7 +23,8 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      padding: 20px;
+      padding: 24px;
+      /* sedikit lebih longgar daripada 20px */
       transition: background var(--transition), color var(--transition);
     }
 
@@ -32,23 +33,29 @@
       border: 1px solid #e2e8f0;
       border-radius: 20px;
       box-shadow: 0 6px 25px rgba(0, 0, 0, .05);
-      padding: 30px;
+      padding: 28px;
       width: 100%;
       max-width: 440px;
       text-align: center;
       position: relative;
+      margin: 0 auto;
     }
 
-    @media (max-width: 480px) {
+    /* =============================
+   Tampilan lebih lembut di mobile
+   ============================= */
+    @media (max-width: 600px) {
+      body {
+        padding: clamp(18px, 5vw, 28px);
+        /* adaptif: 18–28px tergantung lebar layar */
+      }
+
       .card {
-        padding: 22px 18px;
-        /* lebih rapat agar isi tidak "mengapung" */
+        padding: clamp(20px, 4.5vw, 26px);
+        /* fleksibel, tetap proporsional di berbagai device */
         border-radius: 16px;
-        /* sedikit lebih kecil agar proporsional di layar sempit */
+        box-shadow: 0 4px 16px rgba(0, 0, 0, .06);
         max-width: 100%;
-        /* pastikan penuh sesuai lebar layar */
-        box-shadow: 0 4px 18px rgba(0, 0, 0, .06);
-        /* bayangan lebih lembut di mobile */
       }
     }
 
