@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -50,43 +49,56 @@
       color: #2d3748;
     }
 
+    /* === Kotak info URL user/admin === */
     .info-links {
-      font-size: .88em;
-      color: #4a5568;
+      font-size: .9em;
+      background: #1a202c;
+      color: #f7fafc;
       line-height: 1.6;
-      margin-bottom: 18px;
-      display: none;
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      border-radius: 14px;
       text-align: center;
+      display: none;
+      box-shadow: 0 0 0 2px rgba(49,130,206,.2);
+      transition: all .3s ease;
+    }
+    .info-links p { margin: 8px 0; }
+    .info-links a { color: #63b3ed; text-decoration: none; font-weight: 500; word-break: break-all; }
+    .info-links a:hover { color: #90cdf4; text-decoration: underline; }
+    .info-links.show { animation: fadeIn .4s ease forwards; }
+    /* Sedikit transparansi agar keduanya terasa seperti lapisan yang sama */
+    .info-links,
+    #msg {
+      backdrop-filter: blur(3px);
     }
 
-    .info-links p {
-      margin: 6px 0;
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .info-links a {
-      color: #2b6cb0;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color .3s;
-      word-break: break-all;
-    }
-
-    .info-links a:hover {
-      color: #2563eb;
-    }
-
+    /* === Status message === */
     #msg {
       font-size: .9em;
-      color: #4a5568;
-      margin-top: 14px;
-      min-height: 22px;
+      margin-top: 16px;
+      min-height: 28px;
       white-space: pre-line;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: rgba(26, 32, 44, 0.9);
+      color: #f7fafc;
+      text-align: center;
+      line-height: 1.5;
+      transition: all .3s ease;
+      display: none;
     }
 
-    .loading {
-      color: #3182ce;
-      animation: blink 1.2s infinite;
-    }
+    #msg.loading { color: #63b3ed; animation: blink 1.2s infinite; display: block; }
+    #msg.error { color: #f56565; display: block; }
+    #msg.success { color: #68d391; display: block; }
+    #msg.info { color: #edf2f7; display: block; }
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -130,10 +142,7 @@
       transition: background var(--transition), transform var(--transition);
     }
 
-    button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
+    button:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
     #toast {
       position: fixed;
@@ -152,19 +161,12 @@
       z-index: 999;
     }
 
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     #toast.success { background: #38a169; }
     #toast.error { background: #e53e3e; }
     #toast.info { background: #2b6cb0; }
 
-    .logo-image {
-      margin-top: 36px;
-      text-align: center;
-    }
+    .logo-image { margin-top: 36px; text-align: center; }
 
     .logo-img-card {
       width: 100%;
@@ -176,10 +178,7 @@
       transition: transform .3s ease, opacity .3s ease;
     }
 
-    .logo-img-card:hover {
-      transform: scale(1.05);
-      opacity: 1;
-    }
+    .logo-img-card:hover { transform: scale(1.05); opacity: 1; }
 
     footer {
       margin-top: 10px;
@@ -187,15 +186,8 @@
       color: #a0aec0;
       text-align: center;
     }
-
-    footer a {
-      color: #3182ce;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a { color: #3182ce; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     @media (max-width: 480px) {
       .card { padding: 28px 22px 24px; border-radius: 16px; }
@@ -264,6 +256,13 @@
       setTimeout(() => toast.className = toast.className.replace("show", ""), 2500);
     }
 
+    function setMsg(type, text, showPopup = true) {
+      elMsg.className = type;
+      elMsg.textContent = text;
+      elMsg.style.display = "block";
+      if (showPopup) showToast(text, type);
+    }
+
     function isValidUserName(name) {
       return /^[a-zA-Z0-9_-]{3,20}$/.test(name);
     }
@@ -272,6 +271,7 @@
       const user = elUser.value.trim().toLowerCase();
       if (isValidUserName(user)) {
         infoBox.style.display = "block";
+        infoBox.classList.add("show");
         linkUser.textContent = `https://links.tommy.or.id/${user}`;
         linkUser.href = `https://links.tommy.or.id/${user}`;
         linkAdmin.textContent = `https://links.tommy.or.id/admin/${user}`;
@@ -288,13 +288,12 @@
       const pass2 = (document.getElementById("pass2").value || "").trim();
       const honeypot = (document.getElementById("favorite_color").value || "").trim();
 
-      if (honeypot) return showToast("Terdeteksi sebagai bot!", "error");
-      if (!user || !email || !pass) return showToast("Isi semua kolom!", "error");
-      if (!isValidUserName(user)) return showToast("Nama user hanya huruf, angka, - atau _ (3–20 karakter)", "error");
-      if (pass !== pass2) return showToast("Password tidak cocok!", "error");
+      if (honeypot) return setMsg("error", "Terdeteksi sebagai bot!");
+      if (!user || !email || !pass) return setMsg("error", "Isi semua kolom!");
+      if (!isValidUserName(user)) return setMsg("error", "Nama user hanya huruf, angka, - atau _ (3–20 karakter)");
+      if (pass !== pass2) return setMsg("error", "Password tidak cocok!");
 
-      elMsg.textContent = "⏳ Mengecek nama user...";
-      elMsg.classList.add("loading");
+      setMsg("loading", "⏳ Mengecek nama user...");
       elBtn.disabled = true;
 
       try {
@@ -305,14 +304,12 @@
         });
         const check = await resCheck.json();
         if (check.exists) {
-          elMsg.classList.remove("loading");
-          showToast("Nama user sudah terpakai! Gunakan nama lain", "error");
-          elMsg.textContent = "❌ User sudah ada, gunakan nama lain.";
+          setMsg("error", "❌ User sudah ada, gunakan nama lain.");
           elBtn.disabled = false;
           return;
         }
 
-        elMsg.textContent = "🛠 Membuat akun user baru...";
+        setMsg("info", "🛠 Membuat akun user baru...");
         const res = await fetch(apiURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -320,21 +317,22 @@
         });
 
         const data = await res.json();
-        elMsg.classList.remove("loading");
 
         if (data.success) {
           const adminURL = `https://links.tommy.or.id/admin/${data.tenant}`;
-          showToast("Akun berhasil dibuat!", "success");
           let countdown = 10;
           const updateMsg = () => {
+            elMsg.className = "success";
+            elMsg.style.display = "block";
             elMsg.innerHTML = `
               ✅ Akun <b>${data.tenant}</b> berhasil dibuat!<br>
               🛠️ Halaman Admin kamu:
-              <a href="${adminURL}" target="_blank">${adminURL}</a><br>
+              <a href="${adminURL}" target="_blank" style="color:#63b3ed">${adminURL}</a><br>
               Browser akan membuka halaman admin kamu dalam ${countdown} detik...
             `;
           };
           updateMsg();
+          showToast("Akun berhasil dibuat!", "success");
           const interval = setInterval(() => {
             countdown--;
             updateMsg();
@@ -344,13 +342,10 @@
             }
           }, 1000);
         } else {
-          showToast("Gagal membuat akun", "error");
-          elMsg.textContent = "❌ " + (data.error || "Terjadi kesalahan tak dikenal.");
+          setMsg("error", "❌ " + (data.error || "Terjadi kesalahan tak dikenal."));
         }
       } catch (err) {
-        elMsg.classList.remove("loading");
-        showToast("Kesalahan koneksi", "error");
-        elMsg.textContent = "🚫 Koneksi gagal: " + err.message;
+        setMsg("error", "🚫 Koneksi gagal: " + err.message);
       } finally {
         elBtn.disabled = false;
       }
