@@ -473,6 +473,74 @@
       /* biru lebih gelap saat hover */
       transform: translateY(-2px);
     }
+
+    /* ====== BLOK URL TENANT ====== */
+    .tenant-url {
+      margin: 10px 0 18px 0;
+      text-align: center;
+    }
+
+    .tenant-url-label {
+      font-size: 0.8em;
+      color: #718096;
+      /* abu lembut */
+      margin-bottom: 6px;
+    }
+
+    body.dark-mode .tenant-url-label {
+      color: #cbd5e0;
+    }
+
+    /* ====== LINK DENGAN BACKGROUND HITAM ====== */
+    .tenant-url-link {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.85em;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .tenant-url-link:hover {
+      background: rgba(0, 0, 0, 0.85);
+      transform: scale(1.02);
+    }
+
+    body.dark-mode .tenant-url-link {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    /* ===== Variasi warna antara Admin & Publik ===== */
+    .tenant-url-link:first-of-type {
+      background: rgba(0, 0, 0, 0.4);
+      /* lebih muda untuk URL Admin */
+    }
+
+    .tenant-url-link:first-of-type:hover {
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .tenant-url-link:last-of-type {
+      background: rgba(0, 0, 0, 0.7);
+      /* lebih pekat untuk URL Publik */
+    }
+
+    .tenant-url-link:last-of-type:hover {
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    /* Mode gelap: kontras lembut tapi tetap berbeda */
+    body.dark-mode .tenant-url-link:first-of-type {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    body.dark-mode .tenant-url-link:last-of-type {
+      background: rgba(255, 255, 255, 0.15);
+    }
   </style>
 </head>
 
@@ -486,6 +554,19 @@
     </div>
 
     <h2 id="title">Admin Login</h2>
+
+    <div id="tenantUrl" class="tenant-url" style="display:none;">
+
+      <div class="tenant-url-label">URL Admin Anda:</div>
+      <a href="#" target="_blank" rel="noopener noreferrer" id="tenantAdminLink" class="tenant-url-link"></a>
+
+      <div style="height:8px;"></div> <!-- spasi kecil antar bagian -->
+
+      <div class="tenant-url-label">URL Publik Anda:</div>
+      <a href="#" target="_blank" rel="noopener noreferrer" id="tenantLink" class="tenant-url-link"></a>
+
+    </div>
+
 
     <div id="loginSection">
       <input type="email" id="email" placeholder="Email">
@@ -843,6 +924,25 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
           loginSection.style.display = "none";
           dashboard.style.display = "block";
           title.textContent = `Links Grid Admin @${tenant}`;
+
+          const tenantUrlDiv = document.getElementById("tenantUrl");
+          const tenantLink = document.getElementById("tenantLink");
+          const tenantAdminLink = document.getElementById("tenantAdminLink");
+
+          const displayUrl = `https://links.tommy.or.id/${tenant}`;
+          const actualUrl = `https://links.tommy.or.id/?u=${tenant}`;
+          const displayAdminUrl = `https://links.tommy.or.id/admin/${tenant}`;
+          const actualAdminUrl = `https://links.tommy.or.id/admin.html?u=${tenant}`;
+
+          tenantLink.textContent = displayUrl;
+          tenantLink.href = actualUrl;
+
+          tenantAdminLink.textContent = displayAdminUrl;
+          tenantAdminLink.href = actualAdminUrl;
+
+          tenantUrlDiv.style.display = "block";
+
+
           showToast(`Login sebagai ${user.email}`, "success");
 
           await loadHeader();
