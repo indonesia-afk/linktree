@@ -39,6 +39,19 @@
       position: relative;
     }
 
+    @media (max-width: 480px) {
+      .card {
+        padding: 22px 18px;
+        /* lebih rapat agar isi tidak "mengapung" */
+        border-radius: 16px;
+        /* sedikit lebih kecil agar proporsional di layar sempit */
+        max-width: 100%;
+        /* pastikan penuh sesuai lebar layar */
+        box-shadow: 0 4px 18px rgba(0, 0, 0, .06);
+        /* bayangan lebih lembut di mobile */
+      }
+    }
+
     .logo-icon {
       font-size: 3em;
       color: #3182ce;
