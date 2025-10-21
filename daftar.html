@@ -350,6 +350,19 @@
         elBtn.disabled = false;
       }
     });
+
+    // === Prefill dari parameter URL (?u=namauser) ===
+    (function prefillUser() {
+      const params = new URLSearchParams(window.location.search);
+      const preset = params.get('u');
+      if (preset && /^[a-zA-Z0-9_-]{3,20}$/.test(preset)) {
+        elUser.value = preset.toLowerCase();
+        // Jalankan event input agar info-links langsung muncul
+        elUser.dispatchEvent(new Event('input'));
+      }
+    })();
+
+
   </script>
 </body>
 </html>

@@ -400,44 +400,144 @@
         align-items: center;
         gap: 14px;
         padding: 14px 0 10px;
+
+        nav .logo img {
+          margin-bottom: 6px;
+        }
+
+        .hero {
+          padding: 60px 16px;
+          align-items: center;
+          text-align: center;
+        }
+
+        .hero-form {
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          max-width: 90%;
+        }
+
+        .hero-form span,
+        .hero-form input {
+          width: 100%;
+          border-radius: var(--radius);
+          border: 1px solid #cbd5e0;
+          padding: 11px 14px;
+          text-align: center;
+        }
+
+        .hero-form span {
+          margin-bottom: 6px;
+        }
+
+        .hero-form button {
+          width: 100%;
+          max-width: none;
+          margin-top: 12px;
+        }
       }
 
-      nav .logo img {
-        margin-bottom: 6px;
+      /* ===== RESPONSIVE FIX BENAR ===== */
+      @media (max-width: 600px) {
+
+        /* NAVBAR */
+        nav {
+          flex-direction: column;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 0 28px;
+          /* ✅ tambahkan padding-bottom agar tidak menempel ke garis */
+        }
+
+        nav ul {
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+
+        /* beri jarak kanan agar ikon bulan 🌙 tidak menempel */
+        #theme-switcher {
+          margin-left: 6px;
+          padding-right: 8px;
+        }
+
+        /* HERO FORM */
+        .hero {
+          padding: 60px 0;
+          /* hilangkan padding samping agar center murni */
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hero-form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          max-width: 340px;
+          /* batas tengah rapi */
+          margin: 0 auto;
+          text-align: center;
+        }
+
+        .hero-form span,
+        .hero-form input {
+          width: 100%;
+          border: 1px solid #cbd5e0;
+          border-radius: var(--radius);
+          padding: 12px 14px;
+          text-align: center;
+          box-sizing: border-box;
+          margin-bottom: 8px;
+        }
+
+        .hero-form button {
+          width: 100%;
+          max-width: 340px;
+          margin: 0 auto;
+          display: block;
+        }
       }
 
-      .hero {
-        padding: 60px 16px;
-        align-items: center;
-        text-align: center;
+      /* ===== THEME SWITCHER FLOATING UNTUK MOBILE ===== */
+      @media (max-width: 600px) {
+        #theme-switcher {
+          position: fixed;
+          bottom: 18px;
+          left: 18px;
+          font-size: 22px;
+          background: transparent;
+          border: none;
+          color: var(--text-light);
+          box-shadow: none;
+          z-index: 200;
+          opacity: 0.9;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #theme-switcher:hover {
+          opacity: 1;
+          transform: scale(1.15);
+        }
+
+        /* Saat dark mode, warnanya ikut terang */
+        body.dark-mode #theme-switcher {
+          color: var(--text-dark);
+        }
       }
 
-      .hero-form {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        max-width: 90%;
-      }
+      @media (max-width: 600px) {
 
-      .hero-form span,
-      .hero-form input {
-        width: 100%;
-        border-radius: var(--radius);
-        border: 1px solid #cbd5e0;
-        padding: 11px 14px;
-        text-align: center;
+        /* beri jarak antara logo dan menu di navbar */
+        nav .logo {
+          margin-bottom: 10px;
+          /* ✅ ubah nilai ini sesuai selera, misal 12px untuk lebih lega */
+        }
       }
-
-      .hero-form span {
-        margin-bottom: 6px;
-      }
-
-      .hero-form button {
-        width: 100%;
-        max-width: none;
-        margin-top: 12px;
-      }
-    }
   </style>
 </head>
 
