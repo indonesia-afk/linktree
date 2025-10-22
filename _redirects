@@ -1,0 +1,5 @@
+/            /home.html                200
+/daftar      /daftar.html              200
+/admin/*     /admin.html?u=:splat      200
+/super-admin /super-admin.html         200
+/*           /404.html                 404
