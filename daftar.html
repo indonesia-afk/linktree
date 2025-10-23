@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Buat Akun Links Grid – by @TOMMY</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -60,13 +62,30 @@
       border-radius: 14px;
       text-align: center;
       display: none;
-      box-shadow: 0 0 0 2px rgba(49,130,206,.2);
+      box-shadow: 0 0 0 2px rgba(49, 130, 206, .2);
       transition: all .3s ease;
     }
-    .info-links p { margin: 8px 0; }
-    .info-links a { color: #63b3ed; text-decoration: none; font-weight: 500; word-break: break-all; }
-    .info-links a:hover { color: #90cdf4; text-decoration: underline; }
-    .info-links.show { animation: fadeIn .4s ease forwards; }
+
+    .info-links p {
+      margin: 8px 0;
+    }
+
+    .info-links a {
+      color: #63b3ed;
+      text-decoration: none;
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    .info-links a:hover {
+      color: #90cdf4;
+      text-decoration: underline;
+    }
+
+    .info-links.show {
+      animation: fadeIn .4s ease forwards;
+    }
+
     /* Sedikit transparansi agar keduanya terasa seperti lapisan yang sama */
     .info-links,
     #msg {
@@ -75,8 +94,15 @@
 
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* === Status message === */
@@ -95,14 +121,37 @@
       display: none;
     }
 
-    #msg.loading { color: #63b3ed; animation: blink 1.2s infinite; display: block; }
-    #msg.error { color: #f56565; display: block; }
-    #msg.success { color: #68d391; display: block; }
-    #msg.info { color: #edf2f7; display: block; }
+    #msg.loading {
+      color: #63b3ed;
+      animation: blink 1.2s infinite;
+      display: block;
+    }
+
+    #msg.error {
+      color: #f56565;
+      display: block;
+    }
+
+    #msg.success {
+      color: #68d391;
+      display: block;
+    }
+
+    #msg.info {
+      color: #edf2f7;
+      display: block;
+    }
 
     @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
     }
 
     .form-group {
@@ -142,7 +191,10 @@
       transition: background var(--transition), transform var(--transition);
     }
 
-    button:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
 
     #toast {
       position: fixed;
@@ -161,16 +213,31 @@
       z-index: 999;
     }
 
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #toast.success { background: #38a169; }
-    #toast.error { background: #e53e3e; }
-    #toast.info { background: #2b6cb0; }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
 
-    .logo-image { margin-top: 36px; text-align: center; }
+    #toast.success {
+      background: #38a169;
+    }
+
+    #toast.error {
+      background: #e53e3e;
+    }
+
+    #toast.info {
+      background: #2b6cb0;
+    }
+
+    .logo-image {
+      margin-top: 36px;
+      text-align: center;
+    }
 
     .logo-img-card {
       width: 100%;
-      max-width: 240px;
+      max-width: 125px;
       height: auto;
       object-fit: contain;
       display: inline-block;
@@ -178,30 +245,91 @@
       transition: transform .3s ease, opacity .3s ease;
     }
 
-    .logo-img-card:hover { transform: scale(1.05); opacity: 1; }
+    .logo-img-card:hover {
+      transform: scale(1.05);
+      opacity: 1;
+    }
 
     footer {
-      margin-top: 10px;
+      margin-top: 1px;
       font-size: .9em;
       color: #a0aec0;
       text-align: center;
     }
-    footer a { color: #3182ce; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+
+    footer a {
+      color: #3182ce;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
 
     @media (max-width: 480px) {
-      .card { padding: 28px 22px 24px; border-radius: 16px; }
-      h2 { font-size: 1.2em; }
-      .info-links { font-size: .85em; }
-      input, button { max-width: 100%; }
-      .logo-img-card { max-width: 180px; }
+      .card {
+        padding: 28px 22px 24px;
+        border-radius: 16px;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .info-links {
+        font-size: .85em;
+      }
+
+      input,
+      button {
+        max-width: 100%;
+      }
+
+      .logo-img-card {
+        max-width: 180px;
+      }
+    }
+
+    /* ===== Logo ATAS (seperti di index.html) ===== */
+    .logo-top {
+      margin: 0 0 16px 0;
+      text-align: center;
+    }
+
+    .logo-img-top {
+      width: auto;
+      height: auto;
+      max-width: 220px;
+      max-height: 140px;
+      object-fit: contain;
+      display: inline-block;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.98;
+    }
+
+    .logo-img-top:hover {
+      transform: scale(1.04);
+      opacity: 1;
+    }
+
+    @media (max-width: 500px) {
+      .logo-img-top {
+        max-width: 160px;
+        max-height: 100px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="card">
-    <h2><i class="fa-solid fa-user-plus"></i><br>Buat Akun Links Grid</h2>
+
+    <!-- LOGO ATAS (seperti index.html) -->
+    <div class="logo-top">
+      <img src="logo-default.png" alt="Logo Atas" class="logo-img-top" id="topLogo">
+    </div>
+
+    <h2>Buat Akun Baru<br>Links Grid</h2><br>
 
     <div class="info-links" id="infoLinks">
       <p>🌐 Alamat URL Links Grid kamu:<br>
@@ -230,9 +358,8 @@
     </div>
 
     <footer>
-      Links Grid @TOMMY<br>
+      <a href="https://links.tommy.or.id/home" target="_blank">Links Grid </a>@TOMMY<br>
       Powered by <a href="https://espeje.com" target="_blank">https://espeje.com</a><br>
-      <a href="https://news.t-o-m.my.id" target="_blank">Informasi &amp; Berita</a>
     </footer>
   </div>
 
@@ -365,4 +492,5 @@
 
   </script>
 </body>
+
 </html>
