@@ -504,7 +504,7 @@
       font-size: 0.8em;
       color: #718096;
       /* abu lembut */
-      margin-bottom: 6px;
+      margin-bottom: 3px;
     }
 
     body.dark-mode .tenant-url-label {
@@ -585,8 +585,16 @@
       <div class="tenant-url-label">URL Publik Anda:</div>
       <a href="#" target="_blank" rel="noopener noreferrer" id="tenantLink" class="tenant-url-link"></a>
 
-    </div>
+      <!-- ===== QR CODE UNTUK URL PUBLIK ===== -->
+      <div class="tenant-url-label"><br>QR Code URL Publik Anda:</div>
+      <canvas id="tenantQrCanvas" width="160" height="160"
+        style="margin-top:6px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;padding:6px;"></canvas>
+      <div style="margin-top:8px;">
+        <button id="downloadQrBtn" class="btn-secondary" style="width:auto;padding:6px 14px;font-size:.85em;">Unduh
+          QR Code</button>
+      </div>
 
+    </div>
 
     <div id="loginSection">
       <input type="email" id="email" placeholder="Email">
@@ -652,6 +660,8 @@
 
   <script type="module">
 
+    // === QR Code generator ringan ===
+    import QRCode from "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
     import { getFirestore, collection, getDocs, addDoc, deleteDoc, updateDoc, doc, setDoc, query, orderBy, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
@@ -961,6 +971,44 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
 
           tenantUrlDiv.style.display = "block";
 
+          // === Generate QR untuk URL Publik ===
+          const qrCanvas = document.getElementById("tenantQrCanvas");
+          const downloadQrBtn = document.getElementById("downloadQrBtn");
+
+          // fungsi pembuat QR (tema-aware)
+          async function generateTenantQr() {
+            if (!qrCanvas || !tenantLink.href) return;
+            const isDark = document.body.classList.contains("dark-mode");
+
+            // atur latar belakang agar kontras
+            qrCanvas.style.background = isDark ? "#1e1e1e" : "#ffffff";
+            qrCanvas.style.border = isDark ? "1px solid #333" : "1px solid #e2e8f0";
+
+            await QRCode.toCanvas(qrCanvas, displayUrl, {
+              width: 160,
+              margin: 1,
+              color: {
+                dark: isDark ? "#ffffffff" : "#000000ff", // titik QR
+                light: isDark ? "#1e1e1eff" : "#ffffffff" // latar belakang QR
+              }
+            });
+          }
+
+          // pertama kali buat QR
+          await generateTenantQr();
+
+          // tombol unduh
+          downloadQrBtn.onclick = () => {
+            const a = document.createElement("a");
+            a.href = qrCanvas.toDataURL("image/png");
+            a.download = `qr-${tenant}.png`;
+            a.click();
+          };
+
+          // ubah QR jika tema berganti
+          themeSwitcher.addEventListener("click", async () => {
+            setTimeout(generateTenantQr, 200);
+          });
 
           showToast(`Login sebagai ${user.email}`, "success");
 
