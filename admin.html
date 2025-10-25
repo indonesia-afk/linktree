@@ -964,6 +964,8 @@
           const params = new URLSearchParams(window.location.search);
           if (!params.has("u")) {
             window.location.replace(`admin.html?u=${tenantFound}`);
+            // pastikan reload, bukan cache state lama
+            setTimeout(() => location.reload(), 400);
             return;
           }
 
@@ -1057,6 +1059,7 @@ Akun Anda terdaftar di tenant @${tenantFound}.`,
 
           await loadHeader();
           await loadGrid();
+          setTimeout(generateTenantQr, 500);
 
         } catch (err) {
           console.error("Auth verification error:", err);
