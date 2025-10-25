@@ -908,6 +908,19 @@
       }
     });
 
+    // === Tambahan untuk memaksa login manual ===
+    import { signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    
+    // Jika user membuka halaman /admin (tanpa query ?u=), jangan auto-login
+    if (!window.location.search.includes("?u=")) {
+      // Logout dulu jika ada sesi Firebase tersimpan
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          await signOut(auth);
+        }
+      });
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -1140,3 +1153,4 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
 </body>
 
 </html>
+
