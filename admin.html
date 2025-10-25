@@ -908,19 +908,27 @@
       }
     });
 
-    // === Tambahan untuk memaksa login manual ===
-    import { signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    
-    // Jika user membuka halaman /admin (tanpa query ?u=), jangan auto-login
-    if (!window.location.search.includes("?u=")) {
-      // Logout dulu jika ada sesi Firebase tersimpan
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          await signOut(auth);
-        }
-      });
-    }
+    // === Paksa login manual hanya jika buka /admin tanpa ?u=tenant ===
+    (async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasTenant = urlParams.has("u");
+      const path = window.location.pathname;
 
+      // Jika buka halaman admin umum tanpa tenant → bersihkan sesi
+      if (!hasTenant && path.includes("/admin")) {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            await signOut(auth);
+            console.log("🔒 Logout otomatis di halaman /admin (tanpa tenant)");
+          }
+        } catch (err) {
+          console.warn("Gagal logout otomatis:", err);
+        }
+      }
+    })();
+
+    // === Login & deteksi tenant otomatis ===
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -928,13 +936,21 @@
             user.email === "admin@tommy.or.id" ||
             user.email === "tommy@tommy.or.id";
 
-          // Ambil dokumen admin sesuai tenant di URL
-          const adminRef = doc(db, "admins", tenant);
-          const adminSnap = await getDoc(adminRef);
+          // 🔍 Cari tenant berdasarkan UID login
+          let tenantFound = null;
+          const adminsSnap = await getDocs(collection(db, "admins"));
+          for (const docSnap of adminsSnap.docs) {
+            const d = docSnap.data();
+            if (d.uid === user.uid) {
+              tenantFound = docSnap.id;
+              break;
+            }
+          }
 
-          if (!adminSnap.exists()) {
+          // 🚫 Jika akun tidak terdaftar di /admins
+          if (!tenantFound) {
             showModal(
-              `🚫 Tenant @${tenant} belum terdaftar di sistem.`,
+              `🚫 Akun ${user.email} belum terdaftar sebagai admin tenant.`,
               "error",
               async () => {
                 await signOut(auth);
@@ -944,15 +960,19 @@
             return;
           }
 
-          const adminData = adminSnap.data();
-          const registeredUid = adminData.uid;
-          const registeredTenant = adminData.tenantId || tenant;
+          // Jika halaman dibuka tanpa ?u=tenant, arahkan otomatis
+          const params = new URLSearchParams(window.location.search);
+          if (!params.has("u")) {
+            window.location.replace(`admin.html?u=${tenantFound}`);
+            return;
+          }
 
-          // Validasi: apakah akun ini cocok dengan tenant
-          if (!isSuperadmin && user.uid !== registeredUid) {
+          // Validasi agar tidak bisa buka tenant lain
+          const tenantParam = params.get("u");
+          if (!isSuperadmin && tenantParam !== tenantFound) {
             showModal(
-              `🚫 Akses ditolak untuk tenant @${tenant}.
-Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
+              `🚫 Akses ditolak untuk tenant @${tenantParam}.
+Akun Anda terdaftar di tenant @${tenantFound}.`,
               "error",
               async () => {
                 await signOut(auth);
@@ -962,25 +982,26 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
             return;
           }
 
-          // Jika lolos verifikasi
+          // === Jika lolos semua verifikasi ===
           loginSection.style.display = "none";
           dashboard.style.display = "block";
-          title.textContent = `Links Grid Admin @${tenant}`;
+          title.textContent = `Links Grid Admin @${tenantFound}`;
 
+          // tampilkan URL dan QR Code seperti biasa
           const tenantUrlDiv = document.getElementById("tenantUrl");
           const tenantLink = document.getElementById("tenantLink");
           const tenantAdminLink = document.getElementById("tenantAdminLink");
 
-          const displayUrl = `https://links.tommy.or.id/${tenant}`;
-          const actualUrl = `https://links.tommy.or.id/?u=${tenant}`;
-          const displayAdminUrl = `https://links.tommy.or.id/admin/${tenant}`;
-          const actualAdminUrl = `https://links.tommy.or.id/admin.html?u=${tenant}`;
+          const displayUrl = `https://links.tommy.or.id/${tenantFound}`;
+          const actualUrl = `https://links.tommy.or.id/?u=${tenantFound}`;
+          const displayAdminUrl = `https://links.tommy.or.id/admin/${tenantFound}`;
+          const actualAdminUrl = `https://links.tommy.or.id/admin.html?u=${tenantFound}`;
 
           tenantLink.textContent = displayUrl;
           tenantLink.href = actualUrl;
-
           tenantAdminLink.textContent = displayAdminUrl;
           tenantAdminLink.href = actualAdminUrl;
+          tenantUrlDiv.style.display = "block";
 
           tenantUrlDiv.style.display = "block";
 
@@ -988,64 +1009,45 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
           const qrCanvas = document.getElementById("tenantQrCanvas");
           const downloadQrBtn = document.getElementById("downloadQrBtn");
 
-          // fungsi pembuat QR (tema-aware + logo tengah)
           async function generateTenantQr() {
             if (!qrCanvas || !tenantLink.href) return;
             const isDark = document.body.classList.contains("dark-mode");
-
-            // warna tema
             const bgColor = isDark ? "#1e1e1e" : "#ffffff";
             const qrColor = isDark ? "#ffffff" : "#000000";
 
-            // gaya kanvas
             qrCanvas.style.background = bgColor;
             qrCanvas.style.border = isDark ? "1px solid #333" : "1px solid #e2e8f0";
 
-            // 1️⃣ gambar QR dasar
             await QRCode.toCanvas(qrCanvas, displayUrl, {
               width: 160,
               margin: 1,
-              color: {
-                dark: qrColor,
-                light: bgColor
-              }
+              color: { dark: qrColor, light: bgColor }
             });
 
-            // 2️⃣ tambahkan logo di tengah
             const ctx = qrCanvas.getContext("2d");
             const logo = new Image();
-            logo.src = "logo-default.png"; // pastikan file ini ada di direktori yang sama
-
+            logo.src = "logo-default.png";
             logo.onload = () => {
-              const size = 40; // ukuran logo di tengah
+              const size = 40;
               const x = (qrCanvas.width - size) / 2;
               const y = (qrCanvas.height - size) / 2;
-
-              // buat latar belakang kecil di bawah logo agar QR tetap terbaca
               ctx.save();
               ctx.beginPath();
               ctx.roundRect(x - 5, y - 5, size + 10, size + 10, 8);
               ctx.fillStyle = bgColor;
               ctx.fill();
               ctx.restore();
-
-              // gambar logo
               ctx.drawImage(logo, x, y, size, size);
             };
           }
 
-          // pertama kali buat QR
           await generateTenantQr();
-
-          // tombol unduh
           downloadQrBtn.onclick = () => {
             const a = document.createElement("a");
             a.href = qrCanvas.toDataURL("image/png");
-            a.download = `qr-${tenant}.png`;
+            a.download = `qr-${tenantFound}.png`;
             a.click();
           };
-
-          // ubah QR jika tema berganti
           themeSwitcher.addEventListener("click", async () => {
             setTimeout(generateTenantQr, 200);
           });
@@ -1055,6 +1057,7 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
 
           await loadHeader();
           await loadGrid();
+
         } catch (err) {
           console.error("Auth verification error:", err);
           showModal("Gagal memverifikasi hak akses.", "error", async () => {
@@ -1153,4 +1156,3 @@ Akun Anda terdaftar di tenant @${registeredTenant || "tidak diketahui"}.`,
 </body>
 
 </html>
-
