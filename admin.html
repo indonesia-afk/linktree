@@ -943,6 +943,7 @@
             const d = docSnap.data();
             if (d.uid === user.uid) {
               tenantFound = docSnap.id;
+              sessionStorage.setItem("lastTenant", tenantFound);
               break;
             }
           }
@@ -1005,11 +1006,12 @@ Akun Anda terdaftar di tenant @${tenantFound}.`,
           tenantAdminLink.href = actualAdminUrl;
           tenantUrlDiv.style.display = "block";
 
-          tenantUrlDiv.style.display = "block";
-
           // === Generate QR untuk URL Publik ===
           const qrCanvas = document.getElementById("tenantQrCanvas");
           const downloadQrBtn = document.getElementById("downloadQrBtn");
+
+          // fallback tenant setelah reload
+          if (!tenantFound) tenantFound = sessionStorage.getItem("lastTenant");
 
           async function generateTenantQr() {
             if (!qrCanvas || !tenantLink.href) return;
@@ -1020,7 +1022,7 @@ Akun Anda terdaftar di tenant @${tenantFound}.`,
             qrCanvas.style.background = bgColor;
             qrCanvas.style.border = isDark ? "1px solid #333" : "1px solid #e2e8f0";
 
-            await QRCode.toCanvas(qrCanvas, displayUrl, {
+            await QRCode.toCanvas(qrCanvas, tenantLink.href, {
               width: 160,
               margin: 1,
               color: { dark: qrColor, light: bgColor }
@@ -1054,6 +1056,8 @@ Akun Anda terdaftar di tenant @${tenantFound}.`,
             setTimeout(generateTenantQr, 200);
           });
 
+          // pastikan QR dibuat setelah link benar-benar tampil
+          setTimeout(generateTenantQr, 500);
 
           showToast(`Login sebagai ${user.email}`, "success");
 
@@ -1075,9 +1079,13 @@ Akun Anda terdaftar di tenant @${tenantFound}.`,
       }
     });
 
-
     // Tombol Logout
-    logoutBtn.addEventListener("click", () => signOut(auth));
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      sessionStorage.removeItem("lastTenant");
+      localStorage.clear();
+      window.location.href = "index.html";
+    });
 
 
     // ======== LOGO UPLOAD & RESET ========
