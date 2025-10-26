@@ -192,6 +192,59 @@
 </head>
 
 <body>
+
+    <!-- === Pengumuman Migrasi Domain === -->
+    <div id="migrationNotice" style="display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.94); /* semula 0.8, kini jauh lebih gelap */
+  color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  z-index:99999;
+  text-align:center;
+  padding:40px 20px;
+  line-height:1.7;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(4px); /* sedikit efek blur elegan */
+  transition:opacity .5s ease;">
+        <h2 style="font-size:1.7em; margin-bottom:12px;">🚀 Kami Telah Pindah Domain</h2>
+        <p style="font-size:1.05em; max-width:520px;">
+            Grid kamu di <b>links.tommy.or.id</b> kini menggunakan domain baru:<br>
+            <b style="color:#63b3ed; font-size:1.8em; font-weight:800;">link-gr.id</b><br>
+            Silahkan login di alamat domain yang baru!<br><br>
+            Anda akan dialihkan ke halaman baru dalam
+            <span id="countdown">10</span> detik...
+        </p>
+        <a href="https://link-gr.id/home" style="background:#3182ce; color:#fff; text-decoration:none; padding:12px 26px;
+            border-radius:10px; font-weight:600; margin-top:22px; display:inline-block;
+            box-shadow:0 3px 10px rgba(0,0,0,0.4);">
+            Buka Sekarang
+        </a>
+    </div>
+
+    <script>
+        const host = window.location.hostname;
+        if (host.includes("links.tommy.or.id")) {
+            const overlay = document.getElementById("migrationNotice");
+            overlay.style.display = "flex";
+            document.body.style.overflow = "hidden";
+
+            let counter = 10;
+            const countdown = document.getElementById("countdown");
+            const timer = setInterval(() => {
+                counter--;
+                countdown.textContent = counter;
+                if (counter <= 0) {
+                    clearInterval(timer);
+                    window.location.replace("https://link-gr.id/home");
+                }
+            }, 1000);
+        }
+    </script>
+
     <div class="card">
         <button id="theme-switcher"><i class="fas fa-moon"></i></button>
 

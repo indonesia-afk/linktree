@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Pengumuman</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -17,18 +19,34 @@
       margin: 0;
       padding: 20px;
     }
+
     .card {
       background: #fff;
       border: 1px solid #e2e8f0;
       border-radius: 20px;
-      box-shadow: 0 6px 25px rgba(0,0,0,.05);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, .05);
       padding: 30px;
       width: 100%;
       max-width: 480px;
     }
-    h2 { text-align: center; color: #3182ce; margin-top: 0; }
-    label { display: block; font-size: .9em; color: #4a5568; margin-bottom: 4px; margin-top: 12px; text-align: left; }
-    input, textarea {
+
+    h2 {
+      text-align: center;
+      color: #3182ce;
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      font-size: .9em;
+      color: #4a5568;
+      margin-bottom: 4px;
+      margin-top: 12px;
+      text-align: left;
+    }
+
+    input,
+    textarea {
       width: 100%;
       padding: 12px;
       border: 1px solid #cbd5e0;
@@ -38,38 +56,103 @@
       font-family: inherit;
       box-sizing: border-box;
     }
-    textarea { resize: vertical; min-height: 120px; }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
     button {
-      width: 100%; padding: 12px;
-      border: none; border-radius: 10px;
-      cursor: pointer; transition: .3s;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .3s;
       font-size: 1em;
     }
-    #simpanBtn { background: #3182ce; color: #fff; }
-    #simpanBtn:hover { background: #2563eb; }
-    #logoutBtn { background: #e2e8f0; color: #1a202c; margin-top: 8px; }
+
+    #simpanBtn {
+      background: #3182ce;
+      color: #fff;
+    }
+
+    #simpanBtn:hover {
+      background: #2563eb;
+    }
+
+    #logoutBtn {
+      background: #e2e8f0;
+      color: #1a202c;
+      margin-top: 8px;
+    }
+
     #tambahBtn {
-      background: #3182ce; color: #fff;
+      background: #3182ce;
+      color: #fff;
       margin-top: 18px;
     }
-    #tambahBtn:hover { background: #2563eb; }
+
+    #tambahBtn:hover {
+      background: #2563eb;
+    }
+
     .newForm {
       border-top: 1px solid #e2e8f0;
       margin-top: 20px;
       padding-top: 20px;
       display: none;
     }
-    ul { list-style: none; padding: 0; margin-top: 20px; font-size: .9em; }
-    li { padding: 8px 0; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 4px; }
-    .btn-group { display: flex; gap: 8px; margin-top: 4px; }
-    .mini-btn {
-      flex: 1; padding: 6px; border-radius: 8px; border: none;
-      font-size: .85em; cursor: pointer; transition: .2s;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+      font-size: .9em;
     }
-    .edit-btn { background: #3182ce; color: #fff; }
-    .edit-btn:hover { background: #2563eb; }
-    .delete-btn { background: #e53e3e; color: #fff; }
-    .delete-btn:hover { background: #c53030; }
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .mini-btn {
+      flex: 1;
+      padding: 6px;
+      border-radius: 8px;
+      border: none;
+      font-size: .85em;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .edit-btn {
+      background: #3182ce;
+      color: #fff;
+    }
+
+    .edit-btn:hover {
+      background: #2563eb;
+    }
+
+    .delete-btn {
+      background: #e53e3e;
+      color: #fff;
+    }
+
+    .delete-btn:hover {
+      background: #c53030;
+    }
+
     #detailPengumuman {
       margin-top: 20px;
       font-size: .9em;
@@ -83,6 +166,59 @@
 </head>
 
 <body>
+
+  <!-- === Pengumuman Migrasi Domain === -->
+  <div id="migrationNotice" style="display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.94); /* semula 0.8, kini jauh lebih gelap */
+  color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  z-index:99999;
+  text-align:center;
+  padding:40px 20px;
+  line-height:1.7;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(4px); /* sedikit efek blur elegan */
+  transition:opacity .5s ease;">
+    <h2 style="font-size:1.7em; margin-bottom:12px;">🚀 Kami Telah Pindah Domain</h2>
+    <p style="font-size:1.05em; max-width:520px;">
+      Grid kamu di <b>links.tommy.or.id</b> kini menggunakan domain baru:<br>
+      <b style="color:#63b3ed; font-size:1.8em; font-weight:800;">link-gr.id</b><br>
+      Silahkan login di alamat domain yang baru!<br><br>
+      Anda akan dialihkan ke halaman baru dalam
+      <span id="countdown">10</span> detik...
+    </p>
+    <a href="https://link-gr.id/home" style="background:#3182ce; color:#fff; text-decoration:none; padding:12px 26px;
+            border-radius:10px; font-weight:600; margin-top:22px; display:inline-block;
+            box-shadow:0 3px 10px rgba(0,0,0,0.4);">
+      Buka Sekarang
+    </a>
+  </div>
+
+  <script>
+    const host = window.location.hostname;
+    if (host.includes("links.tommy.or.id")) {
+      const overlay = document.getElementById("migrationNotice");
+      overlay.style.display = "flex";
+      document.body.style.overflow = "hidden";
+
+      let counter = 10;
+      const countdown = document.getElementById("countdown");
+      const timer = setInterval(() => {
+        counter--;
+        countdown.textContent = counter;
+        if (counter <= 0) {
+          clearInterval(timer);
+          window.location.replace("https://link-gr.id/home");
+        }
+      }, 1000);
+    }
+  </script>
+
   <div class="card">
     <h2>Admin Pengumuman</h2>
 
@@ -259,4 +395,5 @@
     }
   </script>
 </body>
+
 </html>
